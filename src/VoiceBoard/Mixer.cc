@@ -12,7 +12,6 @@ Mixer::Mixer(float *buf)
 
 Mixer::~Mixer()
 {
-    delete[]buffer;
 }
 
 void
