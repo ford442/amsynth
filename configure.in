@@ -163,6 +163,7 @@ src/Makefile
 src/drivers/Makefile
 src/VoiceBoard/Makefile
 src/GUI/Makefile
+src/Effects/Makefile
 skel/Makefile
 ])
 

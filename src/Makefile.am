@@ -26,10 +26,11 @@ amSynth_ptest_SOURCES = \
 	ptest.cc ptest.h Parameter.cc Preset.cc \
 	PresetController.cc VoiceAllocationUnit.cc Config.cc
 
-SUBDIRS = drivers VoiceBoard GUI
+SUBDIRS = drivers VoiceBoard GUI Effects
 
-amSynth_bin_LDADD = drivers/libdrivers.a VoiceBoard/libVoiceBoard.a GUI/libGUI.a
-amSynth_ptest_LDADD = drivers/libdrivers.a VoiceBoard/libVoiceBoard.a
+amSynth_bin_LDADD = drivers/libdrivers.a VoiceBoard/libVoiceBoard.a GUI/libGUI.a Effects/libEffects.a
+
+amSynth_ptest_LDADD = drivers/libdrivers.a VoiceBoard/libVoiceBoard.a Effects/libEffects.a
 
 LIBS = -lstdc++ -lm
 amSynth_bin_LDFLAGS = $(GTKMM_LIBS)

@@ -5,11 +5,11 @@
 #include "VoiceAllocationUnit.h"
 #include "VoiceBoard/VoiceBoard.h"
 #include "VoiceBoard/Adder.h"
-#include "VoiceBoard/SoftLimiter.h"
 #include "VoiceBoard/FValue.h"
 #include "VoiceBoard/NFValue.h"
-#include "VoiceBoard/Reverb.h"
-#include "VoiceBoard/Distortion.h"
+#include "Effects/SoftLimiter.h"
+#include "Effects/Reverb.h"
+#include "Effects/Distortion.h"
 
 #include <iostream>
 #include <math.h>

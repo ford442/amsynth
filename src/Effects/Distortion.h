@@ -5,7 +5,7 @@
 #ifndef _DISTORTION_H
 #define _DISTORTION_H
 
-#include "Synth--.h"
+#include "../VoiceBoard/Synth--.h"
 #include "../UpdateListener.h"
 #include "../Parameter.h"
 

@@ -5,7 +5,7 @@
 #ifndef _SOFTLIMITER_H
 #define _SOFTLIMITER_H
 
-#include "Synth--.h"
+#include "../VoiceBoard/Synth--.h"
 
 /**
  * @class SoftLimiter

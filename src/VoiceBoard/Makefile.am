@@ -8,18 +8,11 @@ libVoiceBoard_a_SOURCES = \
 			Oscillator.cc Oscillator.h \
 			VoiceBoard.cc VoiceBoard.h \
 			Mixer.cc Mixer.h \
-			Limiter.cc Limiter.h \
 			Adder.cc Adder.h \
 			Multiplier.cc Multiplier.h \
 			LowPassFilter.cc LowPassFilter.h \
 			ProcessAndHold.cc ProcessAndHold.h \
-			SoftLimiter.cc SoftLimiter.h \
 			FreqControlSignal.cc FreqControlSignal.h \
 			FilterControlSignal.cc FilterControlSignal.h \
 			AmpSection.cc AmpSection.h \
-			Distortion.cc Distortion.h \
-			Reverb.cc Reverb.h \
-			allpass.cpp allpass.hpp \
-			comb.cpp comb.hpp \
-			revmodel.cpp revmodel.hpp tuning.h \
-			Synth--.h denormals.h
+			Synth--.h
