@@ -13,7 +13,6 @@
 #include "Oscillator.h"
 #include "FValue.h"
 #include "NFValue.h"
-#include "Adder.h"
 #include "Multiplier.h"
 #include "LowPassFilter.h"
 #include "Mixer.h"
@@ -42,7 +41,6 @@ public:
 		osc2_pulsewidth = new float[bufsize];
 		osc_2_pulsewidth = new float[bufsize];
 		osc_1_pwm_amount = new float[bufsize];
-		mod_add = new float[bufsize];
 		filter_env = new float[bufsize];
 		amp_env = new float[bufsize];
 		freq = new float[bufsize];
@@ -69,7 +67,6 @@ public:
 		delete[] osc2_pulsewidth;
 		delete[] osc_2_pulsewidth;
 		delete[] osc_1_pwm_amount;
-		delete[] mod_add;
 		delete[] filter_env;
 		delete[] amp_env;
 		delete[] freq;
@@ -95,7 +92,6 @@ public:
 	float*	osc2_pulsewidth;
 	float*	osc_2_pulsewidth;
 	float*	osc_1_pwm_amount;
-	float*	mod_add;
 	float*	filter_env;
 	float*	amp_env;
 	float*	freq;
@@ -156,7 +152,6 @@ private:
 	Oscillator 		mod_lfo_real;
 	FValue 			lfo_freq;
 	Multiplier 		mod_mult;
-	Adder 			mod_add;
 	ProcessAndHold 		mod_lfo;
 	
 	// oscillator section

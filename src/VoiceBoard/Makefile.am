@@ -8,7 +8,6 @@ libVoiceBoard_a_SOURCES = \
 			Oscillator.cc Oscillator.h \
 			VoiceBoard.cc VoiceBoard.h \
 			Mixer.cc Mixer.h \
-			Adder.cc Adder.h \
 			Multiplier.cc Multiplier.h \
 			LowPassFilter.cc LowPassFilter.h \
 			ProcessAndHold.cc ProcessAndHold.h \

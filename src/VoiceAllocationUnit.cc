@@ -4,7 +4,6 @@
 
 #include "VoiceAllocationUnit.h"
 #include "VoiceBoard/VoiceBoard.h"
-#include "VoiceBoard/Adder.h"
 #include "VoiceBoard/FValue.h"
 #include "VoiceBoard/NFValue.h"
 #include "Effects/SoftLimiter.h"

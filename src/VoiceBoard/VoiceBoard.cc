@@ -18,7 +18,6 @@ VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	mod_lfo_real		(rate, mem->lfo_osc_1),	
 	lfo_freq		(mem->lfo_freq),	
 	mod_mult		(mem->mod_mult),
-	mod_add			(mem->mod_add),
 	osc1			(rate, mem->osc_1),
 	osc2			(rate, mem->osc_2),
 	osc2_freq		(mem->osc2_freq),
