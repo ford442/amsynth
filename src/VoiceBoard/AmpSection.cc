@@ -19,7 +19,8 @@ AmpSection::setInput( NFSource & source )
 void
 AmpSection::setEnvelope( NFSource & source )
 {
-	env = &source;}
+	env = &source;
+}
 
 void
 AmpSection::setModAmount( Parameter & param )
@@ -49,3 +50,14 @@ AmpSection::getNFData(int nFrames)
 	return buffer;
 }
 
+void
+AmpSection::Process64Samples	(float *buffer)
+{
+	env_buf = env->getNFData (64);
+	lfo_buf = lfo->getFData (64);
+	
+	register int i;
+	for (i=0; i<64; i++) 
+		buffer[i] = buffer[i]*env_buf[i]*vel *
+			( ((lfo_buf[i]*0.5)+0.5)*mod_amount + 1-mod_amount);
+}

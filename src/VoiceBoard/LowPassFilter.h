@@ -34,6 +34,8 @@ public:
 	 */
 	void reset();
 	void update();
+
+	void	Process64Samples	(float*);
 private:
 	Parameter * cutoff_param;
 	Parameter * res_param;

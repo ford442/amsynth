@@ -24,6 +24,7 @@ public:
 
 	void		update();
 	inline float*	getNFData(int nFrames);
+	void		Process64Samples	(float *buffer);
 private:
 	NFSource	*input, *env;
 	FSource		*lfo;

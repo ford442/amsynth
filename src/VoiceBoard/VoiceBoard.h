@@ -122,12 +122,12 @@ public:
  * time. the VoiceAllocationUnit decides which voices do what etc...
  **/
 
-class VoiceBoard : public NFSource {
+class VoiceBoard
+{
 public:
 	VoiceBoard(int rate, VoiceBoardProcessMemory *mem);
 	virtual ~VoiceBoard();
 	void init();
-	inline float *getNFData(int nFrames);
 	void	Process64SamplesMix	(float *buffer, float vol);
 	int getState();
 	void triggerOn();

@@ -115,7 +115,7 @@ VoiceBoard::init()
 	
 	filter.setCFreq( filter_control );
 	filter.setResonance( parameter("filter_resonance") );
-	filter.setInput( osc_mixer );
+	//filter.setInput( osc_mixer );
 
 	/* 
 	 * amp section
@@ -125,19 +125,10 @@ VoiceBoard::init()
 	amp_env.setSustain( parameter("amp_sustain") );
 	amp_env.setRelease( parameter("amp_release") );
 	
-	amp.setInput( filter );
+	//amp.setInput( filter );
 	amp.setLFO( mod_lfo );
 	amp.setEnvelope( amp_env );
 	amp.setModAmount( parameter("amp_mod_amount") );
-}
-
-float *VoiceBoard::getNFData(int nFrames)
-{
-	mod_lfo.process(nFrames);
-	// note the order:
-	filter_control.process(nFrames);
-	master_freq.process(nFrames);
-	return amp.getFData(nFrames);
 }
 
 void
@@ -147,7 +138,10 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	// note the order:
 	filter_control.process (64);
 	master_freq.process (64);
-	float *tmp = amp.getFData (64);
+
+	float *tmp = osc_mixer.getNFData (64);
+	filter.Process64Samples (tmp);
+	amp.Process64Samples (tmp);
 	for (int i=0; i<64; i++) buffer[i] += (tmp[i] * vol);
 }
 
