@@ -114,6 +114,7 @@ VoiceAllocationUnit::noteOn(int note, float velocity)
 		{
 			_voices[note]->reset();
 			active[note]=1;
+			config->active_voices++;
 		}
 
 	_voices[note]->setVelocity(velocity);
@@ -128,7 +129,7 @@ VoiceAllocationUnit::noteOff(int note)
 #endif
 	keyPressed[note] = 0;
 	if (!sustain){
-		if (_voices[note]) 
+		if (_voices[note])
 			_voices[note]->triggerOff();
 	}
 }
