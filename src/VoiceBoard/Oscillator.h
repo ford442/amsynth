@@ -5,7 +5,6 @@
 #define _OSCILLATOR_H
 
 #include "Synth--.h"
-#include "../Parameter.h"
 
 /**
  * @brief An Audio Oscillator unit.
@@ -13,31 +12,22 @@
  * Provides several different output waveforms (sine, saw, square, noise, 
  * random).
  */
-class Oscillator: public UpdateListener
+class Oscillator
 {
 public:
-	enum { 
+	enum Waveform { 
 		Waveform_Sine,
 		Waveform_Pulse,
 		Waveform_Saw,
 		Waveform_Noise,
 		Waveform_Random
-	} Waveform;
+	};
 
-	Oscillator(int rate, float *buf);
-	virtual ~Oscillator();
+	Oscillator	(int rate, float *buf);
 	
 	void	Process64Samples	(float*, float freq_hz, float pw);
-    void setWaveform(int form);
-	/**
-	 * @param source The Parameter which will control the waveform of the
-	 * oscillator.
-	 */
-    void setWaveform(Parameter & param);
-	/* resets the oscillator.
-	 * i.e. from the next call the oscillator will begin its cycle from the
-	 * beginning.
-	 */
+	void	SetWaveform		(Waveform);
+
 	void reset();
 	/*
 	 * reset the oscillator, initially at sample indicated by offset, and then 
@@ -45,27 +35,23 @@ public:
 	 * NB. period >= delta
 	 */
     void reset( int offset, int period );
-    void update();
-	/**
-	 * Sets the oscillator up to synchronise another oscillator (oscillator 
-	 * sync).
-	 * @param param This Parameter controls whether or not to synchronise the 
-	 * other oscillator. 1 indicates yes, 0 no.
-	 */
-	void setSync( Parameter & param, Oscillator & osc );
+
+	void	SetSyncOsc	(Oscillator &);
+	void	SetSync		(int);
+
+	void	update		();
+
   private:
     float *inBuffer, *outBuffer;
     float rads, twopi_rate, random, freq;
 	double a0, a1, b1, d; // for the low-pass filter
-    Parameter *waveParam;
     int waveform, rate, random_count, period;
 
 	float	mPulseWidth;
 	
 	// oscillator sync stuff
-	int reset_offset, reset_cd, sync_c, sync_offset, sync, sync_period, reset_period;
+	int reset_offset, reset_cd, sync_c, sync, sync_offset, sync_period, reset_period;
 	Oscillator *syncOsc;
-	Parameter *syncParam;
 	
     inline void doSine(float*, int nFrames);
     inline void doSquare(float*, int nFrames);

@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  */
 
 #include "Reverb.h"
@@ -10,28 +10,7 @@ Reverb::Reverb()
 }
 
 void
-Reverb::update()
+Reverb::Process	(float *in, float *l, float *r, unsigned nframes)
 {
-	model.setmode( modeParam->getControlValue() );
-	model.setroomsize( roomSizeParam->getControlValue() );
-	model.setdamp( dampParam->getControlValue() );
-	model.setwet( wetParam->getControlValue() );
-	model.setdry( 1-wetParam->getControlValue() );
-//	model.setdry( dryParam->getControlValue() );
-	model.setwidth( widthParam->getControlValue() );
-	//model.update();
-}
-
-void
-Reverb::Alloc	(int nFrames)
-{
-	outbufferL = new float[nFrames];
-	outbufferR = new float[nFrames];
-	outBuffer  = new float[nFrames*2];
-}
-
-void
-Reverb::Process64Samples	(float *in, float *l, float *r)
-{
-	model.processreplace (in, in, l, r, 64, 1);
+	model.processreplace (in, in, l, r, nframes, 1);
 }

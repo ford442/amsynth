@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  */
 
 #include "LowPassFilter.h"
@@ -10,8 +10,6 @@ LowPassFilter::LowPassFilter(int rate)
 	f = k = p = r = d1 = d2 = d3 = d4 = 0.0;
 	a0 = a1 = a2 = b1 = b2 = 0.0;
 	
-	cutoff_param = 0;
-	res_param = 0;
 	this->rate = rate;
 	nyquist = rate/(float)2;
 	max = 1;
@@ -21,26 +19,6 @@ void
 LowPassFilter::reset()
 {
 	d1 = d2 = d3 = d4 = 0;
-}
-
-void
-LowPassFilter::setCutoff( Parameter & param )
-{
-	cutoff_param = &param;
-}
-
-void
-LowPassFilter::setResonance( Parameter & param )
-{
-	res_param = &param;
-	param.addUpdateListener( *this );
-	update();
-}
-
-void
-LowPassFilter::update()
-{
-	res = res_param->getControlValue();
 }
 
 void

@@ -12,7 +12,7 @@ class SoftLimiter
     virtual ~SoftLimiter();
 	void isStereo(){ch=2;};
 
-	void	Process64Samples	(float *l, float *r);
+	void	Process	(float *l, float *r, unsigned);
   private:
     float *buffer;
 	double xpeak, attack, release, thresh;

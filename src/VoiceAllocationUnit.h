@@ -6,6 +6,7 @@
 #define _VOICEALLOCATIONUNIT_H
 
 #include "PresetController.h"
+#include "UpdateListener.h"
 #include "Config.h"
 
 #include <pthread.h>
@@ -15,11 +16,13 @@ class SoftLimiter;
 class Reverb;
 class Distortion;
 
-class VoiceAllocationUnit
+class VoiceAllocationUnit : public UpdateListener
 {
 public:
   VoiceAllocationUnit( Config & config );
   virtual ~VoiceAllocationUnit();
+
+	void	UpdateParameter		(Param, float);
   
   void	AllocateMemory	(int nFrames);
   
@@ -35,7 +38,7 @@ public:
   void killAllVoices();
 	void		set_max_voices	( int voices );
 
-	void	Process64Samples	(float *l, float *r);
+	void	Process			(float *l, float *r, unsigned nframes);
 
 private:
   int max_voices;
@@ -50,6 +53,8 @@ private:
   SoftLimiter	*limiter;
   Reverb	*reverb;
   Distortion	*distortion;
+
+	float	mMasterVol;
 };
 
 #endif

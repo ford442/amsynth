@@ -27,6 +27,7 @@ class Preset {
     };
     void clone(Preset & preset);
     void randomise();
+	void	AddListenerToAll	(UpdateListener*);
   private:
     string _name;
     Parameter parameters[128];

@@ -266,3 +266,9 @@ Preset::randomise()
 		parameters[i].random_val();
 	getParameter( "master_vol" ).setValue( master_vol );
 }
+
+void
+Preset::AddListenerToAll	(UpdateListener* ul)
+{
+	for (int i=0; i<no_p; i++) parameters[i].addUpdateListener (*ul);
+}

@@ -24,11 +24,11 @@ SoftLimiter::~SoftLimiter()
 }
 
 void
-SoftLimiter::Process64Samples	(float *l, float *r)
+SoftLimiter::Process	(float *l, float *r, unsigned nframes)
 {
 	register double x;
-	register int i;
-	for (i=0; i<64; i++)
+	register unsigned i;
+	for (i=0; i<nframes; i++)
 	{
 		x = fabs(*l) + fabs (*r);
 		

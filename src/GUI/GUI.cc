@@ -160,6 +160,7 @@ GUI::GUI( Config & config, MidiController & mc, VoiceAllocationUnit & vau,
 	about_window.get_action_area()->add( about_close_button );
 	about_close_button.add_label( "sweet", 0.5, 0.5 );
 	about_close_button.clicked.connect( about_window.hide.slot() );
+	about_close_button.grab_focus ();
 	about_window.set_transient_for( *this );
 	about_window.delete_event.connect( 
 		bind( slot( this, &GUI::delete_events ), &about_window ) );
@@ -279,6 +280,7 @@ GUI::GUI( Config & config, MidiController & mc, VoiceAllocationUnit & vau,
 	quit_confirm_ok.add_label( "Yes, Quit!", 0.5, 0.5 );
 	quit_confirm_ok.clicked.connect(
 		bind(slot(this, &GUI::event_handler),"quit::ok") );
+	quit_confirm_ok.grab_focus ();
 	quit_confirm.get_action_area()->add( quit_confirm_cancel );
 	quit_confirm_cancel.add_label( "Cancel", 0.5, 0.5 );
 	quit_confirm_cancel.clicked.connect( quit_confirm.hide.slot() );
@@ -317,6 +319,7 @@ GUI::GUI( Config & config, MidiController & mc, VoiceAllocationUnit & vau,
 		realtime_close_button.clicked.connect(realtime_warning.hide.slot());
 		realtime_warning.set_modal( true );
 		realtime_warning.set_transient_for( *this );
+		realtime_close_button.grab_focus ();
 		realtime_warning.show_all();
 	}
 #ifdef _DEBUG

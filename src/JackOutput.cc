@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001-2003 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  **/
 
 #include "JackOutput.h"
@@ -17,8 +17,6 @@ int		buf_size;
 int		p,q,initialised;
 
 
-#define NEW64 1
-
 int
 jack_process (jack_nframes_t nframes, void *arg)
 
@@ -27,28 +25,7 @@ jack_process (jack_nframes_t nframes, void *arg)
 			jack_port_get_buffer (l_port, nframes);
 	rout = (jack_default_audio_sample_t *)
 			jack_port_get_buffer (r_port, nframes);
-	
-	p = 0;
-	while (p<buf_size)
-	{
-#if NEW64
-		myinput->Process64Samples (lout, rout);
-		lout += BUF_SIZE;
-		rout += BUF_SIZE;
-		p += BUF_SIZE;
-#else
-		pt = inbuf = myinput->getNFData(BUF_SIZE);
-		
-		q = BUF_SIZE;
-		while (q--)
-		{
-			*lout++ = *pt++;
-			*rout++ = *pt++;
-		}
-		p += BUF_SIZE;
-#endif
-	}
-
+	myinput->Process (lout, rout, nframes);
 	return 0;
 }
 

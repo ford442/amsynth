@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  **/
 
 #include "AudioOutput.h"
@@ -84,7 +84,7 @@ AudioOutput::run()
 	running = 1;
 	while (running)
 	{
-		mInput->Process64Samples (buffer+128, buffer+192);
+		mInput->Process (buffer+128, buffer+192, BUF_SIZE);
 		for (int i=0; i<BUF_SIZE; i++)
 		{
 			buffer[2*i] = buffer[128+i];

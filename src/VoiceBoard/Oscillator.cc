@@ -1,10 +1,9 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  **/
 
 #include <math.h>
-#include <stdlib.h>
-#include <iostream>
+#include <stdlib.h>		// required for random()
 #include "Oscillator.h"
 
 Oscillator::Oscillator(int rate, float *buf)
@@ -12,34 +11,32 @@ Oscillator::Oscillator(int rate, float *buf)
     outBuffer = buf;
     rads = 0.0;
     waveform = 1;
-    waveParam = 0;
     random = 0;
     random_count = 0;
     this->rate = rate;
     twopi_rate = TWO_PI / rate;
-    syncParam = 0;
     sync = period = 0;
 }
 
-Oscillator::~Oscillator()
+void
+Oscillator::SetWaveform	(Waveform w)
 {
+	waveform = w;
+	update ();
 }
 
 void 
-Oscillator::setWaveform(Parameter & param)
+Oscillator::SetSyncOsc	(Oscillator & osc)
 {
-    waveParam = &param;
-    param.addUpdateListener(*this);
-    update();
+	syncOsc = &osc;
+	update ();
 }
 
-void 
-Oscillator::setSync(Parameter & param, Oscillator & osc)
+void
+Oscillator::SetSync	(int value)
 {
-    syncParam = &param;
-    syncOsc = &osc;
-    param.addUpdateListener(*this);
-    update();
+	sync = value;
+	update ();
 }
 
 void 
@@ -58,16 +55,11 @@ Oscillator::reset(int offset, int period)
 void 
 Oscillator::update()
 {
-    if (waveParam)
-		waveform = (int) waveParam->getValue();
-	sync = 0;
-    if (syncParam)
-		sync = (int) syncParam->getValue();
-	if(sync==0){
+	if (sync == 0)
+	{
 		reset_period = 4096;
 		reset_offset = 4096;
-		if(syncOsc)
-			syncOsc->reset( 4096, 4096 );
+		if (syncOsc) syncOsc->reset( 4096, 4096 );
 	}
 }
 

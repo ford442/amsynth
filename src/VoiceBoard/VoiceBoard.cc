@@ -4,8 +4,6 @@
 
 #include "VoiceBoard.h"
 
-#include <iostream>
-
 VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	// call object constructors with parameters
 	
@@ -18,68 +16,7 @@ VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 {
 	this->rate = rate;
 	this->mem = mem;
-}
-
-VoiceBoard::~VoiceBoard()
-{
-}
-
-Parameter &
-VoiceBoard::parameter( string name )
-{
-	return _preset->getParameter( name );
-}
-
-void
-VoiceBoard::init()
-{
-	/*
-	 * LFO
-	 */
-	lfo1.setWaveform( parameter("lfo_waveform") );
-	parameter("lfo_freq").addUpdateListener (*this);
-	
-	parameter("freq_mod_amount").addUpdateListener (*this);
-
-	/* 
-	 * oscillator section
-	 */
-	osc1.setWaveform( parameter("osc1_waveform") );
-	osc1.setSync( parameter("osc2_sync"), osc2 );
-	osc2.setWaveform( parameter("osc2_waveform") );
-	parameter("osc1_pulsewidth").addUpdateListener (*this);
-	parameter("osc2_detune").addUpdateListener (*this);
-	parameter("osc2_range").addUpdateListener (*this);
-	parameter("osc2_pulsewidth").addUpdateListener (*this);
-	
-	/*
-	 * osc mix section
-	 */
-	parameter("osc_mix").addUpdateListener (*this);
-	parameter("osc_mix_mode").addUpdateListener (*this);
-	
-	/*
-	 * filter section
-	 */
-	filter_env.setAttack( parameter("filter_attack") );
-	filter_env.setDecay( parameter("filter_decay") );
-	filter_env.setSustain( parameter("filter_sustain") );
-	filter_env.setRelease( parameter("filter_release") );
-	
-	parameter("filter_mod_amount").addUpdateListener (*this);
-	parameter("filter_env_amount").addUpdateListener (*this);
-	parameter("filter_resonance").addUpdateListener (*this);
-	parameter("filter_cutoff").addUpdateListener (*this);
-	
-	/* 
-	 * amp section
-	 */
-	amp_env.setAttack( parameter("amp_attack") );
-	amp_env.setDecay( parameter("amp_decay") );
-	amp_env.setSustain( parameter("amp_sustain") );
-	amp_env.setRelease( parameter("amp_release") );
-	
-	parameter("amp_mod_amount").addUpdateListener (*this);
+	osc1.SetSyncOsc (osc2);
 }
 
 void
@@ -88,27 +25,39 @@ VoiceBoard::UpdateParameter	(Param param, float value)
 	switch (param)
 	{
 	case kAmpModAmount:	mAmpModAmount = (value+1.0)/2.0;break;
-	case kLFOFreq:		mLFO1Freq = value;		break;
+	case kLFOFreq:		mLFO1Freq = value; 		break;
+	case kLFOWaveform:	lfo1.SetWaveform ((Oscillator::Waveform) value);
+				break;
 	case kFreqModAmount:	mFreqModAmount=(value/2.0)+0.5;	break;
+	
+	case kOsc1Waveform:	osc1.SetWaveform ((Oscillator::Waveform) value);
+				break;
 	case kOsc1Pulsewidth:	mOsc1PulseWidth = value;	break;
+	case kOsc2Waveform:	osc2.SetWaveform ((Oscillator::Waveform) value);
+				break;
 	case kOsc2Pulsewidth:	mOsc2PulseWidth = value;	break;
 	case kOsc2Octave:	mOsc2Octave = value;		break;
 	case kOsc2Detune:	mOsc2Detune = value;		break;
+	case kOsc2Sync:		osc1.SetSync ((bool) value);	break;
+
 	case kFilterModAmount:	mFilterModAmt = (value+1.0)/2.0;break;
 	case kFilterEnvAmount:	mFilterEnvAmt = value;		break;
 	case kFilterCutoff:	mFilterCutoff = value;		break;
 	case kFilterResonance:	mFilterRes = value;		break;
-	case kOscMixRingMod:
-	case kOscMix:
-		mRingModAmt = parameter("osc_mix_mode").getControlValue ();
-		if (mRingModAmt == 0)
-		{
-			float mix = parameter("osc_mix").getControlValue ();
-			mOsc1Vol = (1-mix)/2.0;
-			mOsc2Vol = (mix+1)/2.0;
-		}
-		else mOsc1Vol = mOsc2Vol = 0.0;
-		break;
+	case kFilterAttack:	filter_env.SetAttack (value);	break;
+	case kFilterDecay:	filter_env.SetDecay (value);	break;
+	case kFilterSustain:	filter_env.SetSustain (value);	break;
+	case kFilterRelease:	filter_env.SetRelease (value);	break;
+
+	case kOscMixRingMod:	mRingModAmt = value;		break;
+	case kOscMix:		mOsc1Vol = (1-value)/2.0;
+				mOsc2Vol = (value+1)/2.0;	break;
+	
+	case kAmpAttack:	amp_env.SetAttack (value);	break;
+	case kAmpDecay:		amp_env.SetDecay (value);	break;
+	case kAmpSustain:	amp_env.SetSustain (value);	break;
+	case kAmpRelease:	amp_env.SetRelease (value);	break;
+		
 	default: break;
 	}
 }
@@ -122,6 +71,9 @@ VoiceBoard::SetPitchBend	(float val)
 void
 VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 {
+	//
+	// Control Signals
+	//
 	float *lfo1buf = mem->lfo_osc_1;
 	lfo1.Process64Samples (lfo1buf, mLFO1Freq, 0);
 
@@ -134,24 +86,42 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	float env_f = *filter_env.getNFData (64);
         float cutoff = mKeyPitch * env_f * mFilterEnvAmt + ( mKeyPitch * mKeyVelocity * mFilterCutoff ) * ( (lfo1buf[0]*0.5 + 0.5) * mFilterModAmt + 1-mFilterModAmt );
 
+	//
+	// VCOs
+	//
 	float *osc1buf = mem->osc_1;
 	float *osc2buf = mem->osc_2;
 	osc1.Process64Samples (osc1buf, osc1freq, osc1pw);
 	osc2.Process64Samples (osc2buf, osc2freq, osc2pw);
 
+	//
+	// Osc Mix
+	//
+	float osc1vol = mOsc1Vol;
+	float osc2vol = mOsc2Vol;
+	if (mRingModAmt == 1.0) osc1vol = osc2vol = 0.0;
 	for (int i=0; i<64; i++)
 		osc1buf[i] =
-			mOsc1Vol * osc1buf[i] +
-			mOsc2Vol * osc2buf[i] +
+			osc1vol * osc1buf[i] +
+			osc2vol * osc2buf[i] +
 			mRingModAmt * osc1buf[i]*osc2buf[i];
 
+	//
+	// VCF
+	//
 	filter.Process64Samples (osc1buf, cutoff, mFilterRes);
 	
+	//
+	// VCA
+	// 
 	float *ampenvbuf = amp_env.getNFData (64);
 	for (int i=0; i<64; i++) 
 		osc1buf[i] = osc1buf[i]*ampenvbuf[i]*mKeyVelocity *
 			( ((lfo1buf[i]*0.5)+0.5)*mAmpModAmount + 1-mAmpModAmount);
 
+	//
+	// Copy, with overall volume
+	//
 	for (int i=0; i<64; i++) buffer[i] += (osc1buf[i] * vol);
 }
 

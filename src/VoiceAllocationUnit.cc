@@ -36,6 +36,7 @@ VoiceAllocationUnit::VoiceAllocationUnit( Config & config )
 	}
   
 	sustain = 0;
+	mMasterVol = 1.0;
 }
 
 void
@@ -43,7 +44,6 @@ VoiceAllocationUnit::AllocateMemory (int nFrames)
 {
 	if (process_memory==NULL) delete process_memory;
 	process_memory = new VoiceBoardProcessMemory (nFrames);
-	reverb->Alloc (nFrames);
 }
 
 VoiceAllocationUnit::~VoiceAllocationUnit	()
@@ -58,22 +58,10 @@ void
 VoiceAllocationUnit::setPreset( Preset & preset )
 {
 	_preset = &preset;
-//	master_vol.setParameter( _preset->getParameter("master_vol") );
-	distortion->setDrive( _preset->getParameter("distortion->drive") );
-	distortion->setCrunch( _preset->getParameter("distortion->crunch") );
-	reverb->setDamp( _preset->getParameter("reverb->damp") );
-	reverb->setDry( _preset->getParameter("reverb->dry") );
-	reverb->setMode( _preset->getParameter("reverb->mode") );
-	reverb->setRoomSize( _preset->getParameter("reverb->roomsize") );
-	reverb->setWet( _preset->getParameter("reverb->wet") );
-	reverb->setWidth( _preset->getParameter("reverb->width") );
-	
+
 	// now we can initialise the voices
-	for( int i=0; i<128; i++ ){
-		_voices[i]->setPreset( *_preset );
+	for( int i=0; i<128; i++ )
 		_voices[i]->setFrequency( (440.0/32.0) * pow(2,((i-9.0)/12.0)) );
-		_voices[i]->init();
-	}
 };
 
 void
@@ -173,14 +161,36 @@ VoiceAllocationUnit::set_max_voices	( int voices )
 }
 
 void
-VoiceAllocationUnit::Process64Samples	(float *l, float *r)
+VoiceAllocationUnit::Process		(float *l, float *r, unsigned nframes)
 {
-	for (int i=0; i<64; i++) l[i] = 0.0;
-	
-	for (int i=0; i<128; i++) if (active[i])
-		_voices[i]->Process64SamplesMix (l, 1.0);
+	for (unsigned i=0; i<nframes; i++) l[i] = 0.0;
 
-//	distortion->Process64Samples (l);
-	reverb->Process64Samples (l, l,r);
-	limiter->Process64Samples (l,r);
+	for (unsigned j=0; j<nframes; j+=64)
+		for (int i=0; i<128; i++) if (active[i])
+			_voices[i]->Process64SamplesMix (l+j, mMasterVol);
+
+	distortion->Process (l, nframes);
+	reverb->Process (l, l,r, nframes);
+	limiter->Process (l,r, nframes);
+}
+
+void
+VoiceAllocationUnit::UpdateParameter	(Param param, float value)
+{
+	switch (param)
+	{
+	case kMasterVol:	mMasterVol = value;		break;
+	case kReverbRoomsize:	reverb->SetRoomSize (value);	break;
+	case kReverbDamp:	reverb->SetDamp (value);	break;
+	case kReverbWet:	reverb->SetWet (value);		break;
+	case kReverbDry:	break;
+	case kReverbWidth:	reverb->SetWidth (value);	break;
+	case kReverbMode:	reverb->SetMode (value);	break;
+	
+	case kDistortionDrive:	break;
+	case kDistortionCrunch:	distortion->SetCrunch (value);	break;
+	
+	default:		for (int i=0; i<128; i++) _voices[i]->UpdateParameter (param, value);
+				break;
+	}
 }

@@ -5,9 +5,7 @@
 #ifndef _VOICEBOARD_H
 #define _VOICEBOARD_H
 
-#include "../PresetController.h"
-#include "../Parameter.h"
-#include "../Preset.h"
+#include "../controls.h"
 #include "ADSR.h"
 #include "Oscillator.h"
 #include "LowPassFilter.h"
@@ -47,30 +45,28 @@ public:
  * time. the VoiceAllocationUnit decides which voices do what etc...
  **/
 
-class VoiceBoard : public UpdateListener
+class VoiceBoard
 {
 public:
 	VoiceBoard(int rate, VoiceBoardProcessMemory *mem);
-	virtual ~VoiceBoard();
-	void init();
-	void	Process64SamplesMix	(float *buffer, float vol);
-	int getState();
-	void triggerOn();
-	void triggerOff();
-	void setVelocity(float velocity);
-	void setFrequency(float frequency);
-	void setPreset(Preset & preset) { _preset = &preset; };
-	void	SetPitchBend		(float);
-	void reset();
 
-	void	UpdateParameter	(Param, float);
+	int	getState		();
+	void	triggerOn		();
+	void	triggerOff		();
+	void	setVelocity		(float velocity);
+	void	setFrequency		(float frequency);
+	void	SetPitchBend		(float);
+	void	reset			();
+
+	void	UpdateParameter		(Param, float);
+
+	void	Process64SamplesMix	(float *buffer, float vol);
+
 private:
 
 	VoiceBoardProcessMemory	*mem;
 	
-	Parameter &	parameter( string name );
 	int rate;
-	Preset *_preset;
 
 	float			mKeyVelocity;
 	float			mKeyPitch;

@@ -244,6 +244,7 @@ under certain conditions; see the file COPYING for details\n";
 	midi_controller->setPresetController( *presetController );
   
 	vau->setPreset( presetController->getCurrentPreset() );
+	presetController->getCurrentPreset().AddListenerToAll (vau);
 
 	presetController->selectPreset( 1 );
         presetController->selectPreset( 0 );

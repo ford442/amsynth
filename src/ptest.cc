@@ -88,7 +88,7 @@ int main( int argc, char *argv[] )
 	
 	while (i<total_calls)
 	{
-		vau->Process64Samples (buffer, buffer+64);
+		vau->Process (buffer, buffer+64, BUF_SIZE);
 #ifdef _with_sndfile
 		sf_writef_float( sndfile, buffer, BUF_SIZE );
 #endif
