@@ -6,18 +6,12 @@
 #define _VOICEBOARD_H
 
 #include "../PresetController.h"
+#include "../Parameter.h"
 #include "../Preset.h"
 #include "Synth--.h"
 #include "ADSR.h"
 #include "Oscillator.h"
-#include "FValue.h"
-#include "NFValue.h"
 #include "LowPassFilter.h"
-#include "ProcessAndHold.h"
-#include "FreqControlSignal.h"
-#include "AmpSection.h"
-#include "../Preset.h"
-#include "../Parameter.h"
 
 class VoiceBoardProcessMemory
 {
@@ -27,8 +21,6 @@ public:
 		osc_1 = new float[bufsize];
 		osc_2 = new float[bufsize];
 		lfo_osc_1 = new float[bufsize];
-		key_pitch = new float[bufsize];
-		lfo_freq = new float[bufsize];
 		filter_env = new float[bufsize];
 		amp_env = new float[bufsize];
 	}
@@ -37,8 +29,6 @@ public:
 		delete[] osc_1;
 		delete[] osc_2;
 		delete[] lfo_osc_1;
-		delete[] key_pitch;
-		delete[] lfo_freq;
 		delete[] filter_env;
 		delete[] amp_env;
 	}
@@ -46,8 +36,6 @@ public:
 	float*	osc_1;
 	float*	osc_2;
 	float*	lfo_osc_1;
-	float*	key_pitch;
-	float*	lfo_freq;
 	float*	filter_env;
 	float*	amp_env;
 };
@@ -88,19 +76,19 @@ private:
 	Preset *_preset;
 
 	float			mKeyVelocity;
-
+	float			mKeyPitch;
+	float			mPitchBend;
+	
 	// pitch control section
 	FSource*		pitch_bend;
-	FValue 			key_pitch;
-	FreqControlSignal 	master_freq;
 
 	// modulation section
-	Oscillator 		mod_lfo_real;
-	FValue 			lfo_freq;
-	ProcessAndHold 		mod_lfo;
+	Oscillator 		lfo1;
+	float			mLFO1Freq;
 	
 	// oscillator section
 	Oscillator 		osc1, osc2;
+	float			mFreqModAmount;
 	float			mOsc1PulseWidth;
 	float			mOsc2PulseWidth;
 	float			mOsc1Vol;
@@ -118,8 +106,8 @@ private:
 	ADSR 			filter_env;
 	
 	// amp section
+	float			mAmpModAmount;
 	ADSR 			amp_env;
-	AmpSection 		amp;
 };
 
 #endif

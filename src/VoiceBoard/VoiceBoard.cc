@@ -1,4 +1,3 @@
-
 /* amSynth
  * (c) 2001-2004 Nick Dowell
  */
@@ -10,9 +9,7 @@
 VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	// call object constructors with parameters
 	
-	key_pitch		(mem->key_pitch),
-	mod_lfo_real		(rate, mem->lfo_osc_1),	
-	lfo_freq		(mem->lfo_freq),	
+	lfo1			(rate, mem->lfo_osc_1),
 	osc1			(rate, mem->osc_1),
 	osc2			(rate, mem->osc_2),
 	filter			(rate), 
@@ -39,19 +36,10 @@ VoiceBoard::init()
 	/*
 	 * LFO
 	 */
-	lfo_freq.setParameter( parameter("lfo_freq") );
-	mod_lfo_real.setInput( lfo_freq );
-	mod_lfo_real.setWaveform( parameter("lfo_waveform") );
+	lfo1.setWaveform( parameter("lfo_waveform") );
+	parameter("lfo_freq").addUpdateListener (*this);
 	
-	mod_lfo.setInput( mod_lfo_real );
-	
-	/*
-	 * pitch control section
-	 */
-	master_freq.setLFO( mod_lfo );
-	master_freq.setPitchBend( *pitch_bend );
-	master_freq.setKeyPitch( key_pitch );
-	master_freq.setModAmount( parameter("freq_mod_amount") );
+	parameter("freq_mod_amount").addUpdateListener (*this);
 
 	/* 
 	 * oscillator section
@@ -91,10 +79,7 @@ VoiceBoard::init()
 	amp_env.setSustain( parameter("amp_sustain") );
 	amp_env.setRelease( parameter("amp_release") );
 	
-	//amp.setInput( filter );
-	amp.setLFO( mod_lfo );
-	amp.setEnvelope( amp_env );
-	amp.setModAmount( parameter("amp_mod_amount") );
+	parameter("amp_mod_amount").addUpdateListener (*this);
 }
 
 void
@@ -102,11 +87,14 @@ VoiceBoard::UpdateParameter	(Param param, float value)
 {
 	switch (param)
 	{
+	case kAmpModAmount:	mAmpModAmount = (value+1.0)/2.0;break;
+	case kLFOFreq:		mLFO1Freq = value;		break;
+	case kFreqModAmount:	mFreqModAmount=(value/2.0)+0.5;	break;
 	case kOsc1Pulsewidth:	mOsc1PulseWidth = value;	break;
 	case kOsc2Pulsewidth:	mOsc2PulseWidth = value;	break;
 	case kOsc2Octave:	mOsc2Octave = value;		break;
 	case kOsc2Detune:	mOsc2Detune = value;		break;
-	case kFilterModAmount:	mFilterModAmt = value;		break;
+	case kFilterModAmount:	mFilterModAmt = (value+1.0)/2.0;break;
 	case kFilterEnvAmount:	mFilterEnvAmt = value;		break;
 	case kFilterCutoff:	mFilterCutoff = value;		break;
 	case kFilterResonance:	mFilterRes = value;		break;
@@ -128,17 +116,19 @@ VoiceBoard::UpdateParameter	(Param param, float value)
 void
 VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 {
-	mod_lfo.process (64);
-	master_freq.process (64);
+	mPitchBend = pitch_bend->getFData(1)[0];
+	
+	float *lfo1buf = mem->lfo_osc_1;
+	lfo1.Process64Samples (lfo1buf, mLFO1Freq, 0);
 
-	float osc1freq = master_freq.getFData(64)[0];
+	float osc1freq = mPitchBend*mKeyPitch * ( mFreqModAmount*(lfo1buf[0]+1.0) + 1.0 - mFreqModAmount );
 	float osc1pw = mOsc1PulseWidth;
 
 	float osc2freq = osc1freq * mOsc2Detune * mOsc2Octave;
 	float osc2pw = mOsc2PulseWidth;
 
 	float env_f = *filter_env.getNFData (64);
-        float cutoff = mem->key_pitch[0] * env_f * mFilterEnvAmt + ( mem->key_pitch[0] * mKeyVelocity * mFilterCutoff ) * ( (mem->lfo_osc_1[0]*0.5 + 0.5) * mFilterModAmt + 1-mFilterModAmt );
+        float cutoff = mKeyPitch * env_f * mFilterEnvAmt + ( mKeyPitch * mKeyVelocity * mFilterCutoff ) * ( (lfo1buf[0]*0.5 + 0.5) * mFilterModAmt + 1-mFilterModAmt );
 
 	float *osc1buf = mem->osc_1;
 	float *osc2buf = mem->osc_2;
@@ -152,7 +142,12 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 			mRingModAmt * osc1buf[i]*osc2buf[i];
 
 	filter.Process64Samples (osc1buf, cutoff, mFilterRes);
-	amp.Process64Samples (osc1buf);
+	
+	float *ampenvbuf = amp_env.getNFData (64);
+	for (int i=0; i<64; i++) 
+		osc1buf[i] = osc1buf[i]*ampenvbuf[i]*mKeyVelocity *
+			( ((lfo1buf[i]*0.5)+0.5)*mAmpModAmount + 1-mAmpModAmount);
+
 	for (int i=0; i<64; i++) buffer[i] += (osc1buf[i] * vol);
 }
 
@@ -189,17 +184,16 @@ VoiceBoard::reset()
 	osc1.reset();
 	osc2.reset();
 	filter.reset();
-	mod_lfo_real.reset();
+	lfo1.reset();
 }
 void 
 VoiceBoard::setFrequency(float frequency)
 {
-	key_pitch.setValue( frequency );
+	mKeyPitch = frequency;
 }
 
 void 
 VoiceBoard::setVelocity(float velocity)
 {
 	mKeyVelocity = velocity;
-	amp.setVelocity( velocity );
 }
