@@ -1,59 +1,41 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2005 Nick Dowell
  */
 
 #include "Parameter.h"
 
-Parameter::Parameter()
-{
-	for (int i=0; i<MAX_ULS; i++) updateListeners[i] = 0;
-    _value = 0.0;
-    _name = "unused";
-    _min = 0.0;
-    _max = 1.0;
-    _step = 0;
-	continuous = true;
-	controlMode = 1;
-	base = 1;
-	offset = 0;
-}
-
-Parameter::~Parameter()
-{
 #ifdef _DEBUG
-	cout << "<Parameter::~Parameter()>" << endl;
+#include <iostream>
 #endif
+
+Parameter::Parameter	(string name, Param id, float value, float min, float max, float inc, ControlType type, float base, float offset, string label)
+:	mParamId	(id)
+,	_name		(name)
+,	label		(label)
+,	controlMode	(type)
+,	_min		(min)
+,	_max		(max)
+,	_step		(inc)
+,	controlValue(0)
+,	base		(base)
+,	offset		(offset)
+{
+	setValue (value);
 }
 
 void
-Parameter::addUpdateListener( UpdateListener & ul )
+Parameter::addUpdateListener	(UpdateListener& ul)
 {
-	for (int i=0; i<MAX_ULS; i++)
-		if (&ul == updateListeners[i])
-			return;
-	
-	for (int i=1; i<MAX_ULS; i++)
-		if (!updateListeners[i]) {
-			updateListeners[i] = &ul;
-			return;
-		}
+	for (unsigned i=0; i<updateListeners.size(); i++) if (updateListeners[i] == &ul) return;
+	updateListeners.push_back (&ul);
+	updateListeners.back()->UpdateParameter (mParamId, controlValue);
 }
 
 void
 Parameter::removeUpdateListener( UpdateListener & ul )
 {
-	for (int i=0; i<MAX_ULS; i++)
-		if (updateListeners[i] == &ul) {
-			updateListeners[i] = 0;
-			return;
-		}
-}
-
-void
-Parameter::setType( int type, float base, float offset )
-{	controlMode = type;
-	this->base = base;
-	this->offset = offset;
+	for (unsigned i=0; i<updateListeners.size(); i++)
+		if (updateListeners[i] == &ul) updateListeners.erase(updateListeners.begin()+i);
 }
 
 void
@@ -62,7 +44,7 @@ Parameter::setValue(float value)
 #ifdef _DEBUG
 	float foo = value;
 #endif
-//	float old_value = _value;
+	float old_value = _value;
 	
 	if (value<_min)
 		value = _min;
@@ -83,10 +65,10 @@ Parameter::setValue(float value)
 			controlValue = offset + base*_value;
 		break;
 		case PARAM_EXP:
-			controlValue = offset + ::pow((double)base,_value);
+			controlValue = offset + ::pow((float)base,_value);
 		break;
 		case PARAM_POWER:
-			controlValue = offset + ::pow( _value, (double)base );
+			controlValue = offset + ::pow( _value, (float)base );
 #ifdef _DEBUG
 		default:
 		cout << "<Parameter> mode is undefined" << endl;
@@ -102,18 +84,18 @@ Parameter::setValue(float value)
 	
 	// TODO: only update() Listeners it there _was_ a change?
 	// messes up the GUI - it needs to be better behaved (respect step value)
-//	if (old_value!=_value)
-		for (int i=0; i<MAX_ULS; i++)
-			if (updateListeners[i]){
+	if (old_value!=_value)
+		for (unsigned i=0; i<updateListeners.size(); i++)
+		{
 #ifdef _DEBUG
-				cout << "updating UpdateListener " << updateListeners[i] << endl;
+			cout << "updating UpdateListener " << updateListeners[i] << endl;
 #endif
-				updateListeners[i]->UpdateParameter (mParamId, controlValue);
-			}
+			updateListeners[i]->UpdateParameter (mParamId, controlValue);
+		}
 }
 
 int
-Parameter::getSteps()
+Parameter::getSteps() const
 {
 	if(!_step)
 		return 0;
@@ -127,26 +109,8 @@ Parameter::getSteps()
 	return i;
 }
 
-float
-Parameter::getValue()
-{
-	return _value;
-}
-
-void
-Parameter::setLabel( string text )
-{
-	label = text;
-}
-
-string
-Parameter::getLabel()
-{
-	return label;
-}
-
 void
 Parameter::random_val()
 {
-	setValue( ((random()/(double)RAND_MAX) * (getMax()-getMin()) + getMin()) );
+	setValue( ((rand()/(float)RAND_MAX) * (getMax()-getMin()) + getMin()) );
 }

@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2005 Nick Dowell
  */
 
 #include "main.h"
@@ -195,7 +195,9 @@ under certain conditions; see the file COPYING for details\n";
 		}
 	}
 	
-	vau = new VoiceAllocationUnit( config ); // were sure of sample_rate now
+	vau = new VoiceAllocationUnit;
+	vau->SetSampleRate (config.sample_rate);
+	vau->SetMaxVoices (config.polyphony);
 	if (enable_audio) out->setInput( vau );
 	
 	presetController->loadPresets(config.current_bank_file.c_str());
@@ -243,12 +245,8 @@ under certain conditions; see the file COPYING for details\n";
 	midi_controller->setVAU( *vau );
 	midi_controller->setPresetController( *presetController );
   
-	vau->setPreset( presetController->getCurrentPreset() );
 	presetController->getCurrentPreset().AddListenerToAll (vau);
 
-	presetController->selectPreset( 1 );
-        presetController->selectPreset( 0 );
-	
 	if (enable_gui==1)
 	{	
 	Gtk::Main kit( &argc, &argv ); // this can be called SUID

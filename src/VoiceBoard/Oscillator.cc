@@ -1,69 +1,32 @@
 /* amSynth
- * (c) 2001-2004 Nick Dowell
+ * (c) 2001-2005 Nick Dowell
  **/
 
-#include <math.h>
-#include <stdlib.h>		// required for random()
+#include <cmath>
+#include <cstdlib>		// required for rand()
+#include <iostream>
 #include "Oscillator.h"
 
-Oscillator::Oscillator(int rate, float *buf)
-:	outBuffer (buf)
-,	rads (0.0)
+Oscillator::Oscillator()
+:	rads (0.0)
 ,	random (0)
 ,	waveform (Waveform_Sine)
-,	rate (rate)
+,	rate (44100)
 ,	random_count (0)
 ,	period (0)
-,	sync (0)
-,	syncOsc (0)
-{
-    twopi_rate = (float) TWO_PI / rate;
-    sync = period = 0;
-}
+,	sync (NULL)
+{}
 
-void
-Oscillator::SetWaveform	(Waveform w)
-{
-	waveform = w;
-	update ();
-}
+void Oscillator::SetWaveform	(Waveform w)			{ waveform = w; }
+void Oscillator::reset			()						{ rads = 0.0; }
+void Oscillator::reset			(int offset, int period){ reset_offset = offset; reset_period = period; }
 
-void 
-Oscillator::SetSyncOsc	(Oscillator & osc)
+void Oscillator::SetSync		(Oscillator* o)
 {
-	syncOsc = &osc;
-	update ();
-}
-
-void
-Oscillator::SetSync	(int value)
-{
-	sync = value;
-	update ();
-}
-
-void 
-Oscillator::reset()
-{
-    rads = 0.0;
-}
-
-void 
-Oscillator::reset(int offset, int period)
-{
-	reset_offset = offset;
-	reset_period = period;
-}
-
-void 
-Oscillator::update()
-{
-	if (sync == 0)
-	{
-		reset_period = 4096;
-		reset_offset = 4096;
-		if (syncOsc) syncOsc->reset( 4096, 4096 );
-	}
+	if (sync) sync->reset (4096, 4096);
+	sync = o;
+	reset_period = 4096;
+	reset_offset = 4096;
 }
 
 void
@@ -74,7 +37,7 @@ Oscillator::ProcessSamples	(float *buffer, int numSamples, float freq_hz, float 
 	
 	sync_c = 0;
 	sync_offset = 65;
-	
+		
 	reset_cd = reset_offset;
 	
 	switch (waveform)
@@ -87,7 +50,7 @@ Oscillator::ProcessSamples	(float *buffer, int numSamples, float freq_hz, float 
 	default: break;
 	}
 	
-	if (sync) syncOsc->reset (sync_offset, (int)(rate/freq));
+	if (sync) sync->reset (sync_offset, (int)(rate/freq));
 }
 
 void 
@@ -173,12 +136,7 @@ Oscillator::doRandom(float *buffer, int nFrames)
     for (int i = 0; i < nFrames; i++) {
 	if (random_count > period) {
 	    random_count = 0;
-		random = 
-#ifdef _WINDOWS
-			0.0;
-#else
-			((float)::random() / (RAND_MAX / 2)) - 1.0;
-#endif
+		random = ((float)::rand() / (RAND_MAX / 2.0f)) - 1.0f;
 	}
 	random_count++;
 	buffer[i] = random;
@@ -189,10 +147,5 @@ void
 Oscillator::doNoise(float *buffer, int nFrames)
 {
     for (int i = 0; i < nFrames; i++)
-		buffer[i] = 
-#ifdef _WINDOWS
-		0;
-#else
-		((float)::random() / (RAND_MAX / 2)) - 1.0;
-#endif
+		buffer[i] = ((float)::rand() / (RAND_MAX / 2.0f)) - 1.0f;
 }

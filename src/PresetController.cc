@@ -40,7 +40,7 @@ PresetController::selectPreset(int preset)
 		return -1;
     }
 	if (preset!=currentPresetNo){
-		currentPreset.clone(presets[preset]);
+		currentPreset = presets[preset];
 		currentPresetNo = preset;
 		if (updateListener) 
 			updateListener->update();
@@ -69,7 +69,7 @@ PresetController::commitPreset()
 #ifdef _DEBUG
 	cout << "<PresetController::commitPreset()>" << endl;
 #endif
-	presets[currentPresetNo].clone(currentPreset);
+	presets[currentPresetNo] = currentPreset;
 }
 
 int
@@ -89,7 +89,7 @@ PresetController::newPreset()
 void
 PresetController::deletePreset()
 {
-	currentPreset.clone( blankPreset );
+	currentPreset = blankPreset;
 	updateListener->update();
 }
 
@@ -122,12 +122,11 @@ PresetController::exportPreset( string filename )
 	file << "amSynth1.0preset" << endl;
 	
 	file << "<preset> " << "<name> " << currentPreset.getName() << endl;
-	for (int n = 0; n < 128; n++)
-		if(currentPreset.getParameter(n).getName()!="unused") {
-			// discard unused Parameters
-			file << "<parameter> " << currentPreset.getParameter(n).getName() 
-			<< " " << currentPreset.getParameter(n).getValue() << endl;
-		}
+	for (unsigned n = 0; n < currentPreset.ParameterCount(); n++)
+	{
+		file << "<parameter> " << currentPreset.getParameter(n).getName() 
+		<< " " << currentPreset.getParameter(n).getValue() << endl;
+	}
 	file.close();
 	
 	return 0;
@@ -190,18 +189,16 @@ PresetController::savePresets	(const char *filename)
 			<< presets[i].getName() << endl;
 #endif
 			file << "<preset> " << "<name> " << presets[i].getName() << endl;
-			for (int n = 0; n < 128; n++) {
-				if(presets[i].getParameter(n).getName()!="unused") {
-					// discard unused Parameters
+			for (unsigned n = 0; n < presets[i].ParameterCount(); n++)
+			{
 #ifdef _DEBUG
-					cout << "PresetController::savePresets() :- parameter name="
-					<< presets[i].getParameter(n).getName() << " value= "
-					<< presets[i].getParameter(n).getValue() << endl;
+				cout << "PresetController::savePresets() :- parameter name="
+				<< presets[i].getParameter(n).getName() << " value= "
+				<< presets[i].getParameter(n).getValue() << endl;
 #endif
-					file << "<parameter> " 
-					<< presets[i].getParameter(n).getName()
-					<< " " << presets[i].getParameter(n).getValue() << endl;
-				}
+				file << "<parameter> " 
+				<< presets[i].getParameter(n).getName()
+				<< " " << presets[i].getParameter(n).getValue() << endl;
 			}
 		}
 	}
@@ -280,7 +277,7 @@ PresetController::loadPresets	(const char *filename)
 		}
 	}
 
-	currentPreset.clone(presets[currentPresetNo]);
+	currentPreset = presets[currentPresetNo];
 	if (updateListener) updateListener->update();
 #ifdef _DEBUG
 	cout << "<PresetController::loadPresets()>: success" << endl;

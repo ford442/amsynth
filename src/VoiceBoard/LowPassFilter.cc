@@ -1,18 +1,16 @@
 /* amSynth
- * (c) 2001-2004 Nick Dowell
+ * (c) 2001-2005 Nick Dowell
  */
 
 #include "LowPassFilter.h"
 #include <math.h>
 
-LowPassFilter::LowPassFilter(int rate)
+LowPassFilter::LowPassFilter() :
+	rate (4100.0)
+,	nyquist (22050.0)
 {
-	f = k = p = r = d1 = d2 = d3 = d4 = 0.0;
-	a0 = a1 = a2 = b1 = b2 = 0.0;
-	
-	this->rate = rate;
-	nyquist = rate/(float)2;
-	max = 1;
+	d1 = d2 = d3 = d4 = f = k = p = r = 0.0f;
+	a0 = a1 = a2 = b1 = b2 = 0.0f;
 }
 
 void
@@ -25,7 +23,7 @@ void
 LowPassFilter::ProcessSamples	(float *buffer, int numSamples, float fc, float res)
 {
 	// constrain cutoff
-#define SAFE 0.99 // filter is unstable _AT_ PI
+#define SAFE 0.99f // filter is unstable _AT_ PI
 	if (fc>(nyquist*SAFE))
 		fc=nyquist*SAFE;
 	if (fc<10)
@@ -59,6 +57,6 @@ LowPassFilter::ProcessSamples	(float *buffer, int numSamples, float fc, float re
 		d3 = d4 + ( a1*x ) + ( b1*y );
 		d4 = ( a2*x ) + ( b2*y );
 		
-		buffer[i] = y;
+		buffer[i] = (float) y;
 	}
 }

@@ -48,7 +48,7 @@ public:
 class VoiceBoard
 {
 public:
-	VoiceBoard(int rate, VoiceBoardProcessMemory *mem);
+	VoiceBoard(VoiceBoardProcessMemory *mem);
 
 	int	getState		();
 	void	triggerOn		();
@@ -62,14 +62,12 @@ public:
 
 	void	ProcessSamplesMix	(float *buffer, int numSamples, float vol);
 
-	Oscillator osc;
+	void	SetSampleRate		(int);
 
 private:
 
 	VoiceBoardProcessMemory	*mem;
 	
-	int rate;
-
 	float			mKeyVelocity;
 	float			mKeyPitch;
 	float			mPitchBend;

@@ -1,58 +1,55 @@
 /* amSynth
- * (c) 2001-2004 Nick Dowell
+ * (c) 2001-2005 Nick Dowell
  */
 
 #ifndef _VOICEALLOCATIONUNIT_H
 #define _VOICEALLOCATIONUNIT_H
 
-#include "PresetController.h"
-#include "UpdateListener.h"
-#include "Config.h"
+#include <vector>
 
-#include <pthread.h>
+#include "UpdateListener.h"
 
 class VoiceBoard;
 class SoftLimiter;
-class Reverb;
+class revmodel;
 class Distortion;
 
 class VoiceAllocationUnit : public UpdateListener
 {
 public:
-  VoiceAllocationUnit( Config & config );
-  virtual ~VoiceAllocationUnit();
+			VoiceAllocationUnit		();
+	virtual	~VoiceAllocationUnit	();
 
 	void	UpdateParameter		(Param, float);
-  
-  void	AllocateMemory	(int nFrames);
+
+	void	SetSampleRate		(int);
   
   void noteOn(int note, float velocity);
   void noteOff(int note);
   void pwChange( float value );
-  void setPresetController(PresetController & p_c)
-  {_presetController = &p_c; };
-  void setPreset(Preset & preset);
   void sustainOn()
   { sustain = 1; };
   void sustainOff();
   void killAllVoices();
-	void		set_max_voices	( int voices );
+  
+	void	SetMaxVoices	(int voices) { mMaxVoices = voices; }
+	int		GetActiveVoices	() { return mActiveVoices; }
 
 	void	Process			(float *l, float *r, unsigned nframes);
 
 private:
-  int max_voices;
-  void purgeVoices();
-  float _pitch[128];
-  char keyPressed[128], sustain;
-  bool	active[128];
-  VoiceBoard *_voices[128];
-  Preset *_preset;
-  PresetController *_presetController;
-  Config *config;
-  SoftLimiter	*limiter;
-  Reverb	*reverb;
-  Distortion	*distortion;
+	void	purgeVoices		();
+
+	int		mMaxVoices;
+	int 	mActiveVoices;
+
+	char	keyPressed[128], sustain;
+	bool	active[128];
+	std::vector<VoiceBoard>	_voices;
+	
+	SoftLimiter	*limiter;
+	revmodel	*reverb;
+	Distortion	*distortion;
 
 	float	mMasterVol;
 };

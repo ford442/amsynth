@@ -1,12 +1,12 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2005 Nick Dowell
  */
 
 #ifndef _PRESET_H
 #define _PRESET_H
 
 #include <string>
-#include "base.h"
+#include <vector>
 #include "Parameter.h"
 
 /**
@@ -14,25 +14,25 @@
  * the Preset holds all the parameters for a paticular timbre (preset).
  */
 
-class Preset {
+class Preset
+{
+public:
+					Preset			();
+	Preset&			operator =		(Preset& p);
 
-  public:
-    Preset();
-    ~Preset();
-    string getName();
-    void setName(string name);
-    Parameter & getParameter(string name);
-    Parameter & getParameter(int no) {
-		return parameters[no];
-    };
-    void clone(Preset & preset);
-    void randomise();
-	void	AddListenerToAll	(UpdateListener*);
-  private:
-    string _name;
-    Parameter parameters[128];
-    Parameter nullparam;
-    int no_p;
+	const string	getName			() const { return mName; }
+	void			setName			(const string name) { mName = name; }
+	
+	unsigned		ParameterCount	() const { return mParameters.size(); }
+	Parameter&		getParameter	(const string name);
+	Parameter&		getParameter	(const int no) { return mParameters[no]; };
+    void			randomise		();
+    void			AddListenerToAll(UpdateListener*);
+
+private:
+    std::string				mName;
+	std::vector<Parameter>	mParameters;
+	Parameter				nullparam;
 };
 
 #endif

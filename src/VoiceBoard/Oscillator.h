@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001-2004 Nick Dowell
+ * (c) 2001-2005 Nick Dowell
  */
 #ifndef _OSCILLATOR_H
 #define _OSCILLATOR_H
@@ -23,7 +23,9 @@ public:
 		Waveform_Random
 	};
 
-	Oscillator	(int rate, float *buf);
+	Oscillator	();
+
+	void	SetSampleRate	(int rateIn) { rate = rateIn; twopi_rate = (float) TWO_PI / rate; }
 	
 	void	ProcessSamples		(float*, int, float freq_hz, float pw);
 	void	SetWaveform		(Waveform);
@@ -36,13 +38,9 @@ public:
 	 */
     void reset( int offset, int period );
 
-	void	SetSyncOsc	(Oscillator &);
-	void	SetSync		(int);
+	void	SetSync		(Oscillator*);
 
-	void	update		();
-
-  private:
-    float *inBuffer, *outBuffer;
+private:
     float rads, twopi_rate, random, freq;
 	double a0, a1, b1, d; // for the low-pass filter
     int waveform, rate, random_count, period;
@@ -50,8 +48,8 @@ public:
 	float	mPulseWidth;
 	
 	// oscillator sync stuff
-	int reset_offset, reset_cd, sync_c, sync, sync_offset, sync_period, reset_period;
-	Oscillator *syncOsc;
+	int reset_offset, reset_cd, sync_c, sync_offset, sync_period, reset_period;
+	Oscillator*	sync;
 	
     inline void doSine(float*, int nFrames);
     inline void doSquare(float*, int nFrames);
