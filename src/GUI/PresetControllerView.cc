@@ -26,6 +26,14 @@ PresetControllerView::PresetControllerView( int pipe_d, VoiceAllocationUnit & va
     add( presets_combo );
 	add( commit );
 
+	Gtk::Label *blank = manage (new Gtk::Label ("    "));
+	add (*blank);
+
+	Gtk::Button *panic = manage (new Gtk::Button);
+	panic->add_label ("Panic");
+	panic->clicked.connect ( bind <char*>(slot(this, &PresetControllerView::ev_handler),"panic"));
+	add (*panic);
+
 	piped = pipe_d;
 	request.slot = slot( this, &PresetControllerView::_update_ );
 }
@@ -58,6 +66,8 @@ PresetControllerView::ev_handler(string text)
 			inhibit_combo_update = false;
 		} else
 		return;
+	} else if (text == "panic") {
+		vau->killAllVoices();
 	} else {
 #ifdef _DEBUG
 		cout << "<PresetController::ev_handler> couldnt find action for '"
