@@ -62,8 +62,9 @@ public:
 	 * Give this Parameter a name.
 	 * @param name the name to identify this parameter
 	**/
-	void setName(string name)
-	{ _name = name; };
+	void setName(string name, Param id)
+	{ _name = name; mParamId = id; }
+	Param	GetId	()	{ return mParamId; }
 	/**
 	 * Set the mode for this parameter.
 	 * The Parameter can be direct, type : PARAM_DIRECT
@@ -162,6 +163,7 @@ public:
 	void setLabel( string text );
 	
 private:
+	Param	mParamId;
 	string _name, label;
 	int controlMode;
 	bool continuous;

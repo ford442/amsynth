@@ -108,7 +108,7 @@ Parameter::setValue(float value)
 #ifdef _DEBUG
 				cout << "updating UpdateListener " << updateListeners[i] << endl;
 #endif
-				updateListeners[i]->update();
+				updateListeners[i]->UpdateParameter (mParamId, controlValue);
 			}
 }
 

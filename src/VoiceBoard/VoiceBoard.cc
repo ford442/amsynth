@@ -98,27 +98,31 @@ VoiceBoard::init()
 }
 
 void
-VoiceBoard::update	()
+VoiceBoard::UpdateParameter	(Param param, float value)
 {
-	mRingModAmt = parameter("osc_mix_mode").getControlValue ();
-	if (mRingModAmt == 0)
+	switch (param)
 	{
-		float mix = parameter("osc_mix").getControlValue ();
-		mOsc1Vol = (1-mix)/2.0;
-		mOsc2Vol = (mix+1)/2.0;
+	case kOsc1Pulsewidth:	mOsc1PulseWidth = value;	break;
+	case kOsc2Pulsewidth:	mOsc2PulseWidth = value;	break;
+	case kOsc2Octave:	mOsc2Octave = value;		break;
+	case kOsc2Detune:	mOsc2Detune = value;		break;
+	case kFilterModAmount:	mFilterModAmt = value;		break;
+	case kFilterEnvAmount:	mFilterEnvAmt = value;		break;
+	case kFilterCutoff:	mFilterCutoff = value;		break;
+	case kFilterResonance:	mFilterRes = value;		break;
+	case kOscMixRingMod:
+	case kOscMix:
+		mRingModAmt = parameter("osc_mix_mode").getControlValue ();
+		if (mRingModAmt == 0)
+		{
+			float mix = parameter("osc_mix").getControlValue ();
+			mOsc1Vol = (1-mix)/2.0;
+			mOsc2Vol = (mix+1)/2.0;
+		}
+		else mOsc1Vol = mOsc2Vol = 0.0;
+		break;
+	default: break;
 	}
-	else 
-		mOsc1Vol = mOsc2Vol = 0.0;
-
-	mOsc1PulseWidth = parameter("osc1_pulsewidth").getControlValue ();
-	mOsc2PulseWidth = parameter("osc2_pulsewidth").getControlValue ();
-	mOsc2Octave = parameter("osc2_range").getControlValue ();
-	mOsc2Detune = parameter("osc2_detune").getControlValue ();
-
-	mFilterModAmt = (parameter("filter_mod_amount").getControlValue ()+1.0)/2.0;
-	mFilterEnvAmt = parameter("filter_env_amount").getControlValue ();
-	mFilterCutoff = parameter("filter_cutoff").getControlValue ();
-	mFilterRes = parameter("filter_resonance").getControlValue ();
 }
 
 void

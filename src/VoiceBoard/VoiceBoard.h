@@ -77,7 +77,7 @@ public:
 	void setPitchWheel(FSource & source);
 	void reset();
 
-	void	update	();
+	void	UpdateParameter	(Param, float);
 private:
 
 	VoiceBoardProcessMemory	*mem;

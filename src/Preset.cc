@@ -10,102 +10,102 @@ Preset::Preset()
 {
     _name = "New Preset";
 
-    nullparam.setName("null");
+    nullparam.setName("null", kControls_End);
 
     no_p = 0;
 
-    parameters[no_p].setName("amp_attack");
+    parameters[no_p].setName("amp_attack", kAmpAttack);
 	setupTimeParam
     no_p++;
 
-    parameters[no_p].setName("amp_decay");
+    parameters[no_p].setName("amp_decay", kAmpDecay);
     setupTimeParam
     no_p++;
 
-    parameters[no_p].setName("amp_sustain");
+    parameters[no_p].setName("amp_sustain", kAmpSustain);
     parameters[no_p].setValue(1);
     no_p++;
 
-    parameters[no_p].setName("amp_release");
+    parameters[no_p].setName("amp_release", kAmpRelease);
     setupTimeParam
     no_p++;
 
-    parameters[no_p].setName("osc1_waveform");
+    parameters[no_p].setName("osc1_waveform", kOsc1Waveform);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(4.0);
     parameters[no_p].setStep(1.0);
     no_p++;
 
-    parameters[no_p].setName("filter_attack");
+    parameters[no_p].setName("filter_attack", kFilterAttack);
     setupTimeParam
     no_p++;
 
-    parameters[no_p].setName("filter_decay");
+    parameters[no_p].setName("filter_decay", kFilterDecay);
     setupTimeParam
     no_p++;
 
-    parameters[no_p].setName("filter_sustain");
+    parameters[no_p].setName("filter_sustain", kFilterSustain);
     parameters[no_p].setValue(1);
     no_p++;
 
-    parameters[no_p].setName("filter_release");
+    parameters[no_p].setName("filter_release", kFilterRelease);
     setupTimeParam
     no_p++;
 
-    parameters[no_p].setName("filter_resonance");
+    parameters[no_p].setName("filter_resonance", kFilterResonance);
 	parameters[no_p].setMax(0.97);
     parameters[no_p].setValue(0);
     no_p++;
 	
-	parameters[no_p].setName("filter_env_amount");
+	parameters[no_p].setName("filter_env_amount", kFilterEnvAmount);
 	parameters[no_p].setMax(16.0);
     parameters[no_p].setValue(0);
     no_p++;
     
-	parameters[no_p].setName("filter_cutoff");
+	parameters[no_p].setName("filter_cutoff", kFilterCutoff);
     parameters[no_p].setType(PARAM_EXP, 16, 0);
     parameters[no_p].setMin(-0.5);
     parameters[no_p].setMax(1);
     parameters[no_p].setValue(1);
     no_p++;
 
-    parameters[no_p].setName("osc2_detune");
+    parameters[no_p].setName("osc2_detune", kOsc2Detune);
     parameters[no_p].setType(PARAM_EXP, 1.25, 0);
     parameters[no_p].setMin(-1);
     parameters[no_p].setMax(1);
     parameters[no_p].setValue(0);
     no_p++;
 
-    parameters[no_p].setName("osc2_waveform");
+    parameters[no_p].setName("osc2_waveform", kOsc2Waveform);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(4.0);
     parameters[no_p].setStep(1.0);
     no_p++;
 
-    parameters[no_p].setName("master_vol");
+    parameters[no_p].setName("master_vol", kMasterVol);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
     parameters[no_p].setValue(1.0);
 	parameters[no_p].setType( PARAM_POWER, 2, 0 );
     no_p++;
 
-    parameters[no_p].setName( "lfo_freq" );
+    parameters[no_p].setName( "lfo_freq", kLFOFreq );
 	parameters[no_p].setType( PARAM_POWER, 2, 0 );
     parameters[no_p].setMax( 7.5 );
 	parameters[no_p].setLabel( "Hz" );
     no_p++;
 
-    parameters[no_p].setName( "lfo_depth" );
+    parameters[no_p].setName( "lfo_depth", kLFODepth );
     parameters[no_p].setValue( 0 );
     no_p++;
 
-    parameters[no_p].setName("lfo_waveform");
+    parameters[no_p].setName("lfo_waveform", kLFOWaveform);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(4.0);
     parameters[no_p].setStep(1.0);
     no_p++;
 
-    parameters[no_p].setName("osc2_range");
+    parameters[no_p].setName("osc2_range", kOsc2Octave);
     parameters[no_p].setMin(-1);
     parameters[no_p].setMax(2);
     parameters[no_p].setStep(1.0);
@@ -113,98 +113,98 @@ Preset::Preset()
     parameters[no_p].setValue(0);
     no_p++;
 	
-	parameters[no_p].setName("osc_mix");
+	parameters[no_p].setName("osc_mix", kOscMix);
     parameters[no_p].setMin(-1.0);
     parameters[no_p].setMax(1.0);
     no_p++;
 	
-	parameters[no_p].setName("freq_mod_amount");
+	parameters[no_p].setName("freq_mod_amount", kFreqModAmount);
 	parameters[no_p].setType( PARAM_POWER, 3, -1 );
 	parameters[no_p].setMin( 0.0 );
 	parameters[no_p].setMax( 1.25992105 );
     no_p++;
 	
-	parameters[no_p].setName("filter_mod_amount");
+	parameters[no_p].setName("filter_mod_amount", kFilterModAmount);
     parameters[no_p].setMin(-1.0);
     parameters[no_p].setMax(1.0);
 	parameters[no_p].setValue(-1);
     no_p++;
 
-	parameters[no_p].setName("amp_mod_amount");
+	parameters[no_p].setName("amp_mod_amount", kAmpModAmount);
     parameters[no_p].setMin(-1.0);
     parameters[no_p].setMax(1.0);
 	parameters[no_p].setValue(-1);
     no_p++;
 	
-	parameters[no_p].setName("osc1_pwm_amount");
+	parameters[no_p].setName("osc1_pwm_amount", kOsc1PWMAmount);
     parameters[no_p].setMin(-1.0);
     parameters[no_p].setMax(1.0);
 	parameters[no_p].setValue(-1);
     no_p++;
 	
-	parameters[no_p].setName("osc_mix_mode");
+	parameters[no_p].setName("osc_mix_mode", kOscMixRingMod);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
 	parameters[no_p].setStep(1.0);
     no_p++;
 	
-	parameters[no_p].setName("osc1_pulsewidth");
+	parameters[no_p].setName("osc1_pulsewidth", kOsc1Pulsewidth);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
     no_p++;
 	
-	parameters[no_p].setName("osc2_pulsewidth");
+	parameters[no_p].setName("osc2_pulsewidth", kOsc2Pulsewidth);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
     no_p++;
 	
-	parameters[no_p].setName("reverb_roomsize");
+	parameters[no_p].setName("reverb_roomsize", kReverbRoomsize);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
     no_p++;
 	
-	parameters[no_p].setName("reverb_damp");
+	parameters[no_p].setName("reverb_damp", kReverbDamp);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
     no_p++;
 	
-	parameters[no_p].setName("reverb_wet");
+	parameters[no_p].setName("reverb_wet", kReverbWet);
     parameters[no_p].setMin( 0.0 );
     parameters[no_p].setMax( 1.0 );
 	parameters[no_p].setValue( 0.0 );
     no_p++;
 	
-	parameters[no_p].setName("reverb_dry");
+	parameters[no_p].setName("reverb_dry", kReverbDry);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
 	parameters[no_p].setValue(0.5);
     no_p++;
 	
-	parameters[no_p].setName("reverb_width");
+	parameters[no_p].setName("reverb_width", kReverbWidth);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
     no_p++;
 	
-	parameters[no_p].setName("reverb_mode");
+	parameters[no_p].setName("reverb_mode", kReverbMode);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(0.0);
 //	parameters[no_p].setStep(1.0);
 	parameters[no_p].setDiscrete(true);
     no_p++;
 	
-	parameters[no_p].setName("distortion_drive");
+	parameters[no_p].setName("distortion_drive", kDistortionDrive);
     parameters[no_p].setMin(1.0);
     parameters[no_p].setMax(16.0);
 	parameters[no_p].setValue(1.0);
     no_p++;
 	
-	parameters[no_p].setName("distortion_crunch");
+	parameters[no_p].setName("distortion_crunch", kDistortionCrunch);
 	parameters[no_p].setMin(0.0);
 	parameters[no_p].setMax(0.9);
 	parameters[no_p].setValue (0.0);
 	no_p++;
 	
-	parameters[no_p].setName("osc2_sync");
+	parameters[no_p].setName("osc2_sync", kOsc2Sync);
     parameters[no_p].setMin(0.0);
     parameters[no_p].setMax(1.0);
 	parameters[no_p].setStep(1.0);
@@ -220,7 +220,9 @@ Preset::clone(Preset & preset)
 {
     for (int i = 0; i < 128; i++) {
 		parameters[i].setValue(preset.getParameter(i).getValue());
-		parameters[i].setName(preset.getParameter(i).getName());
+		parameters[i].setName(
+			preset.getParameter(i).getName (),
+			preset.getParameter(i).GetId ());
     }
     setName(preset.getName());
 }
