@@ -6,7 +6,6 @@ libVoiceBoard_a_SOURCES = \
 			NFValue.cc NFValue.h \
 			Oscillator.cc Oscillator.h \
 			VoiceBoard.cc VoiceBoard.h \
-			Multiplier.cc Multiplier.h \
 			LowPassFilter.cc LowPassFilter.h \
 			ProcessAndHold.cc ProcessAndHold.h \
 			FreqControlSignal.cc FreqControlSignal.h \
