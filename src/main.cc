@@ -115,55 +115,10 @@ under certain conditions; see the file COPYING for details\n";
 	int enable_audio = 1;
 	int enable_gui = 1;
 	
-	// set default parameters
-	config.audio_driver = "auto";
-	config.midi_driver = "auto";
-	config.oss_midi_device = "/dev/midi";
-	config.midi_channel = 0;
-	config.oss_audio_device = "/dev/dsp";
-	config.alsa_audio_device = "default";
-	config.sample_rate = 44100;
-	config.channels = 2;
-	config.buffer_size = BUF_SIZE;
-	config.polyphony = 10;
-	config.alsa_seq_client_name = "amSynth";
-	string amsynth_bank_file( getenv("HOME") );
-	amsynth_bank_file += "/.amSynth.presets";
-	config.current_bank_file = amsynth_bank_file;
 	
-	// load saved parameters (if any) from .amSynthrc
-	string amsynthrc_fname( getenv("HOME") );
-	amsynthrc_fname += "/.amSynthrc";
-	
-	config.load (amsynthrc_fname);
-
-	presetController = new PresetController();
-	
-	// get command line options (they override saved prefs.)
 	int opt;
 	while( (opt=getopt(argc, argv, "vhstdm:c:a:r:p:b:"))!= -1 ) {
 		switch(opt) {
-			case 'm': 
-				config.midi_driver = optarg;
-				break;
-			case 'b': 
-				config.current_bank_file = optarg;
-				break;
-			case 'c':
-				config.midi_channel = atoi( optarg ); 
-				break;
-			case 'a':
-				config.audio_driver = optarg; 
-				break;
-			case 'd':
-				config.debug_drivers = 1;
-				break;
-			case 'r':
-				config.sample_rate = atoi( optarg );
-				break;
-			case 'p':
-				config.polyphony = atoi( optarg );
-				break;
 			case 'v':
 				cout << "amSynth " << VERSION << " -- compiled "
 					<< __DATE__ << " " << __TIME__ << endl;
@@ -178,16 +133,27 @@ under certain conditions; see the file COPYING for details\n";
 				enable_gui = 0;
 				break;				
 			default:
-				return 0;
+				break;
 		}
 	}
 	
-	if (config.debug_drivers) 
+	
+	// setup the configuration
+	config.Defaults ();
+	config.load ();
+	config.ParseCOpts (argc, argv);
+	
+	if (config.debug_drivers)
 		cout << "\n*** CONFIGURATION:\n"
 				<< "MIDI:- driver:" << config.midi_driver 
 				<< " channel:" << config.midi_channel << endl 
 				<< "AUDIO:- driver:" << config.audio_driver 
 				<< " sample rate:" << config.sample_rate << endl;
+
+	string amsynth_bank_file = config.current_bank_file;
+
+	presetController = new PresetController();
+	
 	
 	//
 	// initialise audio
@@ -319,7 +285,7 @@ under certain conditions; see the file COPYING for details\n";
 	 */
 
 	config.xfontname = gui->get_x_font ();
-	config.save (amsynthrc_fname);
+	config.save ();
 		
 	presetController->savePresets(config.current_bank_file.c_str ());
 	midi_controller->saveConfig();
