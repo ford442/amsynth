@@ -20,14 +20,14 @@
 
 #include <pthread.h>
 
-class VoiceAllocationUnit : public NFSource {
+class VoiceAllocationUnit
+{
 public:
   VoiceAllocationUnit( Config & config );
   virtual ~VoiceAllocationUnit(){};
   
   void	AllocateMemory	(int nFrames);
   
-  float *getNFData(int nFrames);
   void noteOn(int note, float velocity);
   void noteOff(int note);
   void pwChange( float value );

@@ -10,11 +10,13 @@ AudioOutput::AudioOutput()
 	running = 0;
 	recording = 0;
 	wavoutfile = "/tmp/amSynth.wav";
+	buffer = new float[BUF_SIZE*4];
 }
 
 AudioOutput::~AudioOutput()
 {
 	out.close();
+	delete[] buffer;
 }
 
 int
@@ -82,7 +84,12 @@ AudioOutput::run()
 	running = 1;
 	while (running)
 	{
-		float *buffer = mInput->getNFData(BUF_SIZE);
+		mInput->Process64Samples (buffer+128, buffer+192);
+		for (int i=0; i<BUF_SIZE; i++)
+		{
+			buffer[2*i] = buffer[128+i];
+			buffer[2*i+1] = buffer[192+i];
+		}
 #ifdef with_sndfile
 		if( recording )
 			sf_writef_float( sndfile, buffer, BUF_SIZE );

@@ -185,22 +185,6 @@ VoiceAllocationUnit::set_max_voices	( int voices )
 	config->polyphony = max_voices = voices;
 }
 
-float*
-VoiceAllocationUnit::getNFData(int nFrames)
-{
-	for (int i=0; i<128; i++)
-		if (activate[i]==1)
-		{
-			mixer.addInput(*_voices[i]);
-			config->active_voices++;
-			activate[i]=0;
-			connected[i] = 1;
-		}
-	float *data = limiter.getFData(nFrames);
-	purgeVoices();
-	return data;
-}
-
 void
 VoiceAllocationUnit::Process64Samples	(float *l, float *r)
 {

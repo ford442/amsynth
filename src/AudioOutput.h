@@ -79,6 +79,7 @@ private:
   AudioInterface out;
   string wavoutfile;
   int recording;
+  float	*buffer;
 #ifdef with_sndfile
   SNDFILE *sndfile;
   SF_INFO sf_info;

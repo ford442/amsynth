@@ -73,7 +73,7 @@ int main( int argc, char *argv[] )
 	
 	long i=0;
 	long total_calls = config.sample_rate * time_seconds / BUF_SIZE;
-	float *buffer;
+	float buffer[128];
 	
 	// trigger off some notes for amSynth to render.
 	for (int v=0; v<num_voices; v++)
@@ -88,7 +88,7 @@ int main( int argc, char *argv[] )
 	
 	while (i<total_calls)
 	{
-		buffer = vau->getNFData(BUF_SIZE);
+		vau->Process64Samples (buffer, buffer+64);
 #ifdef _with_sndfile
 		sf_writef_float( sndfile, buffer, BUF_SIZE );
 #endif
