@@ -16,6 +16,9 @@ int		sample_rate;
 int		buf_size;
 int		p,q,initialised;
 
+
+#define NEW64 1
+
 int
 jack_process (jack_nframes_t nframes, void *arg)
 
@@ -28,6 +31,12 @@ jack_process (jack_nframes_t nframes, void *arg)
 	p = 0;
 	while (p<buf_size)
 	{
+#if NEW64
+		myinput->Process64Samples (lout, rout);
+		lout += BUF_SIZE;
+		rout += BUF_SIZE;
+		p += BUF_SIZE;
+#else
 		pt = inbuf = myinput->getNFData(BUF_SIZE);
 		
 		q = BUF_SIZE;
@@ -37,6 +46,7 @@ jack_process (jack_nframes_t nframes, void *arg)
 			*rout++ = *pt++;
 		}
 		p += BUF_SIZE;
+#endif
 	}
 
 	return 0;

@@ -21,6 +21,8 @@ class SoftLimiter:public NFSource, public FInput {
     void setInput(FSource & source);
     inline float *getNFData(int nFrames);
 	void isStereo(){ch=2;};
+
+	void	Process64Samples	(float *l, float *r);
   private:
     FSource *source;
     float *buffer;

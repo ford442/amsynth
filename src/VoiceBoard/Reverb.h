@@ -33,6 +33,9 @@ class Reverb:public FInput, public NFSource, public UpdateListener {
 	{ modeParam = &param; param.addUpdateListener(*this); };
 	void mute()
 	{ model.mute(); };
+
+	void	Process64Samples	(float *in, float *l, float *r);
+
   private:
 	revmodel model;
     FSource *input;

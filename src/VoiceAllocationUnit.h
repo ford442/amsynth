@@ -39,6 +39,9 @@ public:
   void sustainOff();
   void killAllVoices();
 	void		set_max_voices	( int voices );
+
+	void	Process64Samples	(float *l, float *r);
+
 private:
   int max_voices;
   void purgeVoices();

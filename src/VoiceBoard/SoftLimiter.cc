@@ -64,3 +64,35 @@ SoftLimiter::getNFData(int nFrames)
 	}
     return buffer;
 }
+
+void
+SoftLimiter::Process64Samples	(float *l, float *r)
+{
+	register double x;
+	register int i;
+	for (i=0; i<64; i++)
+	{
+		x = fabs(*l) + fabs (*r);
+		
+		if (x>xpeak) xpeak=(1-release)*xpeak + attack*(x-xpeak);
+		else xpeak=(1-release)*xpeak;
+			
+		if (xpeak>0){
+//			x = 1/xpeak;
+			x = log(xpeak);
+			x -= thresh;
+			if (x<0) x = 0;
+//			x *= ((1/Ratio)-1); 
+			/* 1<= Ratio < infinity = compressor
+			   ratio=infinity = limiter
+			   0 < ratio < 1 = expander
+			   0 = gate
+			*/
+			else x *= -1;
+			x = exp(x);
+		} else x=1;
+		
+		*l++ *= x;
+		*r++ *= x;
+	}
+}

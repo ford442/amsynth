@@ -42,3 +42,9 @@ Reverb::getNFData(int nFrames)
 		outBuffer[i] = ( (ch=1-ch) ? outbufferL[idx] : outbufferR[idx++] );
 	return outBuffer;
 }
+
+void
+Reverb::Process64Samples	(float *in, float *l, float *r)
+{
+	model.processreplace (in, in, l, r, 64, 1);
+}

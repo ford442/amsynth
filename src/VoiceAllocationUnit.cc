@@ -200,3 +200,21 @@ VoiceAllocationUnit::getNFData(int nFrames)
 	purgeVoices();
 	return data;
 }
+
+void
+VoiceAllocationUnit::Process64Samples	(float *l, float *r)
+{
+	for (int i=0; i<128; i++)
+		if (activate[i]==1)
+		{
+			mixer.addInput(*_voices[i]);
+			config->active_voices++;
+			activate[i]=0;
+			connected[i] = 1;
+		}
+
+	float *distout = distortion.getNFData (64);
+
+	reverb.Process64Samples (distout, l,r);
+	limiter.Process64Samples (l,r);
+}
