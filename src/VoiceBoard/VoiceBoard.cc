@@ -20,13 +20,6 @@ VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	mod_mult		(mem->mod_mult),
 	osc1			(rate, mem->osc_1),
 	osc2			(rate, mem->osc_2),
-	osc2_freq		(mem->osc2_freq),
-	osc1_pw			(mem->osc1_pw),
-	osc2_detune		(mem->osc_2_detune),
-	osc2_range		(mem->osc_2_range),
-	osc2_pulsewidth_control	(mem->osc_2_pulsewidth),
-	osc1_pwm_amt		(mem->osc_1_pwm_amount),
-	osc1_pw_mixer		(mem->osc1_pw_mixer),
 	filter			(rate), 
 	filter_env		(rate,mem->filter_env), 
 	amp_env			(rate,mem->amp_env)
@@ -69,25 +62,17 @@ VoiceBoard::init()
 	/* 
 	 * oscillator section
 	 */
-	parameter("osc1_pulsewidth").addUpdateListener (*this);
-	
 	osc1.setWaveform( parameter("osc1_waveform") );
-//	osc1.setInputSig( &master_freq );
-//	osc1.setInput( master_freq );
-	
 	osc1.setSync( parameter("osc2_sync"), osc2 );
-
-	osc2_freq.addInput( master_freq );
-	osc2_detune.setParameter( parameter("osc2_detune") );
-	osc2_freq.addInput( osc2_detune );
-	osc2_range.setParameter( parameter("osc2_range") );
-	osc2_freq.addInput( osc2_range );
-
 	osc2.setWaveform( parameter("osc2_waveform") );
-	osc2_pulsewidth_control.setParameter( parameter("osc2_pulsewidth") );
-	osc2.setPulseWidth( osc2_pulsewidth_control );
-	osc2.setInput( osc2_freq );
-
+	parameter("osc1_pulsewidth").addUpdateListener (*this);
+	parameter("osc2_detune").addUpdateListener (*this);
+	parameter("osc2_range").addUpdateListener (*this);
+	parameter("osc2_pulsewidth").addUpdateListener (*this);
+	
+	/*
+	 * osc mix section
+	 */
 	parameter("osc_mix").addUpdateListener (*this);
 	parameter("osc_mix_mode").addUpdateListener (*this);
 	
@@ -132,6 +117,9 @@ VoiceBoard::update	()
 		mOsc1Vol = mOsc2Vol = 0.0;
 
 	mOsc1PulseWidth = parameter("osc1_pulsewidth").getControlValue ();
+	mOsc2PulseWidth = parameter("osc2_pulsewidth").getControlValue ();
+	mOsc2Octave = parameter("osc2_range").getControlValue ();
+	mOsc2Detune = parameter("osc2_detune").getControlValue ();
 
 	mFilterModAmt = (parameter("filter_mod_amount").getControlValue ()+1.0)/2.0;
 	mFilterEnvAmt = parameter("filter_env_amount").getControlValue ();
@@ -148,12 +136,16 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	float osc1freq = master_freq.getFData(64)[0];
 	float osc1pw = mOsc1PulseWidth;
 
+	float osc2freq = osc1freq * mOsc2Detune * mOsc2Octave;
+	float osc2pw = mOsc2PulseWidth;
+
 	float env_f = *filter_env.getNFData (64);
         float cutoff = mem->key_pitch[0] * env_f * mFilterEnvAmt + ( mem->key_pitch[0] * mKeyVelocity * mFilterCutoff ) * ( (mem->lfo_osc_1[0]*0.5 + 0.5) * mFilterModAmt + 1-mFilterModAmt );
 
 	float *osc1buf = mem->osc_1;
+	float *osc2buf = mem->osc_2;
 	osc1.Process64Samples (osc1buf, osc1freq, osc1pw);
-	float *osc2buf = osc2.getNFData (64);
+	osc2.Process64Samples (osc2buf, osc2freq, osc2pw);
 
 	for (int i=0; i<64; i++)
 		osc1buf[i] =
