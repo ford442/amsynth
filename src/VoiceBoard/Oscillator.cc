@@ -87,33 +87,34 @@ Oscillator::update()
     if (syncParam)
 		sync = (int) syncParam->getValue();
 	if(sync==0){
-		reset_period = BUF_SIZE+1;
-		reset_offset = BUF_SIZE+1;
+		reset_period = 4096;
+		reset_offset = 4096;
 		if(syncOsc)
-			syncOsc->reset( BUF_SIZE+1, BUF_SIZE+1 );
+			syncOsc->reset( 4096, 4096 );
 	}
 }
 
 float *
-Oscillator::getNFData()
+Oscillator::getNFData(int nFrames)
 {
     // do we really need to track the frequency _every_ sample??
 	if (input)
 	{
-	    inBuffer = input->getFData();
+	    inBuffer = input->getFData(nFrames);
 		freq = inBuffer[0];
 	}
     else
 	{
-		freq = inputSig->GetValue();
+		inputSig->process (nFrames);
+		freq = inputSig->getFData(nFrames)[0];
 	}
 	sync_c = 0;
-    sync_offset = BUF_SIZE + 1;
+    sync_offset = nFrames + 1;
 	
     reset_cd = reset_offset;
     
 	if (pulseWidth) {
-		pulseBuffer = pulseWidth->getFData();
+		pulseBuffer = pulseWidth->getFData(nFrames);
     } else {
 		pulseBuffer[0] = 0;
     }
@@ -121,19 +122,19 @@ Oscillator::getNFData()
     // any decision statements are BAD in real-time code...
     switch (waveform) {
 	case 0:
-		doSine();
+		doSine(nFrames);
 		break;
 	case 1:
-		doSquare();
+		doSquare(nFrames);
 		break;
 	case 2:
-		doSaw();
+		doSaw(nFrames);
 		break;
 	case 3:
-		doNoise();
+		doNoise(nFrames);
 		break;
 	case 4:
-		doRandom();
+		doRandom(nFrames);
 		break;
 	default:
 		break;
@@ -144,16 +145,16 @@ Oscillator::getNFData()
 }
 
 void 
-Oscillator::doSine()
+Oscillator::doSine(int nFrames)
 {
-    for (int i = 0; i < BUF_SIZE; i++) {
+    for (int i = 0; i < nFrames; i++) {
 		outBuffer[i] = sin(rads += (twopi_rate * freq));
 		//-- sync to other oscillator --
 		if (reset_cd-- == 0){
 			rads = 0.0;					// reset the oscillator
 			reset_cd = reset_period-1;	// start counting down again
 		}
-		if ( sync_offset > BUF_SIZE)	// then we havent already found the offset
+		if ( sync_offset > nFrames)	// then we havent already found the offset
 			if( rads > TWO_PI )			// then weve completed a circle
 				sync_offset = i;		// remember the offset
 	}
@@ -170,16 +171,16 @@ Oscillator::sqr(float foo)
 }
 
 void 
-Oscillator::doSquare()
+Oscillator::doSquare(int nFrames)
 {
-    for (int i = 0; i < BUF_SIZE; i++) {
+    for (int i = 0; i < nFrames; i++) {
 		outBuffer[i] = sqr(rads += (twopi_rate * freq));
 		//-- sync to other oscillator --
 		if (reset_cd-- == 0){
 			rads = 0.0;					// reset the oscillator
 			reset_cd = reset_period-1;	// start counting down again
 		}
-		if ( sync_offset > BUF_SIZE)	// then we havent already found the offset
+		if ( sync_offset > nFrames)	// then we havent already found the offset
 			if( rads > TWO_PI )			// then weve completed a circle
 				sync_offset = i;		// remember the offset
 	}
@@ -203,16 +204,16 @@ Oscillator::saw(float foo)
 }
 
 void 
-Oscillator::doSaw()
+Oscillator::doSaw(int nFrames)
 {
-    for (int i = 0; i < BUF_SIZE; i++) {
+    for (int i = 0; i < nFrames; i++) {
 		outBuffer[i] = saw(rads += (twopi_rate * freq));
 		//-- sync to other oscillator --
 		if (reset_cd-- == 0){
 			rads = 0.0;					// reset the oscillator
 			reset_cd = reset_period-1;	// start counting down again
 		}
-		if ( sync_offset > BUF_SIZE)	// then we havent already found the offset
+		if ( sync_offset > nFrames)	// then we havent already found the offset
 			if( rads > TWO_PI )			// then weve completed a circle
 				sync_offset = i;		// remember the offset
 	}
@@ -220,10 +221,10 @@ Oscillator::doSaw()
 }
 
 void 
-Oscillator::doRandom()
+Oscillator::doRandom(int nFrames)
 {
     register int period = (int) (rate / freq);
-    for (int i = 0; i < BUF_SIZE; i++) {
+    for (int i = 0; i < nFrames; i++) {
 	if (random_count > period) {
 	    random_count = 0;
 	    random = ((float)::random() / (RAND_MAX / 2)) - 1.0;
@@ -234,8 +235,8 @@ Oscillator::doRandom()
 }
 
 void 
-Oscillator::doNoise()
+Oscillator::doNoise(int nFrames)
 {
-    for (int i = 0; i < BUF_SIZE; i++)
+    for (int i = 0; i < nFrames; i++)
 	outBuffer[i] = ((float)::random() / (RAND_MAX / 2)) - 1.0;
 }

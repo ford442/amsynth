@@ -47,11 +47,11 @@ float FValue::getParamVal()
   return _param->getControlValue();
 }
 
-float *FValue::getFData()
+float *FValue::getFData(int nFrames)
 {
 	float tmp = getValue();
 	register int i;
-	for (i = 0; i < BUF_SIZE; i++) 
+	for (i = 0; i < nFrames; i++) 
 		_buffer[i] = tmp;
 	return _buffer;
 }

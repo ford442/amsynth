@@ -18,7 +18,7 @@ class Oscillator:public NFSource, public FInput, public UpdateListener {
   public:
 	Oscillator(int rate, float *buf);
     virtual ~Oscillator();
-    inline float *getNFData();
+    inline float *getNFData(int nFrames);
   	void setInput(FSource &input);
     void setInputSig(FreqControlSignal *signal);
 	/**
@@ -66,11 +66,11 @@ class Oscillator:public NFSource, public FInput, public UpdateListener {
 	Oscillator *syncOsc;
 	Parameter *syncParam;
 	
-    inline void doSine();
-    inline void doSquare();
-    inline void doSaw();
-    inline void doNoise();
-	inline void doRandom();
+    inline void doSine(int nFrames);
+    inline void doSquare(int nFrames);
+    inline void doSaw(int nFrames);
+    inline void doNoise(int nFrames);
+	inline void doRandom(int nFrames);
 	inline float sqr(float foo);
 	inline float saw(float foo);
 };

@@ -20,7 +20,7 @@ public:
   Limiter();
   virtual ~Limiter();
   void setInput( FSource & source );
-  inline float * getNFData();
+  inline float * getNFData(int nFrames);
 
 public:
   FSource * source;

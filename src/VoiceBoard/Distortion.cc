@@ -61,9 +61,9 @@ Distortion::update()
 }
 
 float *
-Distortion::getNFData()
+Distortion::getNFData(int nFrames)
 {
-    buffer = input->getFData();
+    buffer = input->getFData(nFrames);
     register float x, s;
 	if(crunch==0)crunch=0.01;
 /*	// LOGDISTORT (3lines)
@@ -71,7 +71,7 @@ Distortion::getNFData()
 	if (crunch<0.001) return buffer;
 	k=log(crunch+1);*/
 	
-	for (int i = 0; i < BUF_SIZE; i++) {
+	for (int i = 0; i < nFrames; i++) {
 //		y = drive * buffer[i];
 		/* LIMITDISTORT.
 		x = buffer[i]*drive;

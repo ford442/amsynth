@@ -6,12 +6,12 @@
 #include <iostream>
 #include <math.h>
 
-static voiceboard_process_memory process_memory;
-static float master_vol_buf[BUF_SIZE];
-static float pw_val_buf[BUF_SIZE];
-static float zero_buf[BUF_SIZE];
-static float mixer_buf[BUF_SIZE];
-static float amp_buf[BUF_SIZE];
+static VoiceBoardProcessMemory* process_memory;
+static float master_vol_buf[4096];
+static float pw_val_buf[4096];
+static float zero_buf[4096];
+static float mixer_buf[4096];
+static float amp_buf[4096];
 
 VoiceAllocationUnit::VoiceAllocationUnit( Config & config ) :
 	mixer(mixer_buf),
@@ -26,9 +26,11 @@ VoiceAllocationUnit::VoiceAllocationUnit( Config & config ) :
 #ifdef _DEBUG
 	cout << "<VoiceAllocationUnit> new VAU created" << endl;
 #endif
+
+	AllocateMemory (config.buffer_size);
 	for (int i = 0; i < 128; i++) {
 		keyPressed[i] = 0;
-		_voices[i] = new VoiceBoard(config.sample_rate, &process_memory);
+		_voices[i] = new VoiceBoard(config.sample_rate, process_memory);
 		// voices are initialised in setPreset() below...
 	}
   
@@ -49,6 +51,14 @@ VoiceAllocationUnit::VoiceAllocationUnit( Config & config ) :
 	
 	limiter.isStereo();
 	limiter.setInput( reverb );
+}
+
+void
+VoiceAllocationUnit::AllocateMemory (int nFrames)
+{
+	if (process_memory==NULL) delete process_memory;
+	process_memory = new VoiceBoardProcessMemory (nFrames);
+	reverb.Alloc (nFrames);
 }
 
 void
@@ -176,7 +186,7 @@ VoiceAllocationUnit::set_max_voices	( int voices )
 }
 
 float*
-VoiceAllocationUnit::getNFData()
+VoiceAllocationUnit::getNFData(int nFrames)
 {
 	for (int i=0; i<128; i++)
 		if (activate[i]==1)
@@ -186,7 +196,7 @@ VoiceAllocationUnit::getNFData()
 			activate[i]=0;
 			connected[i] = 1;
 		}
-	float *data = limiter.getFData();
+	float *data = limiter.getFData(nFrames);
 	purgeVoices();
 	return data;
 }

@@ -114,7 +114,7 @@ ADSR::getState()
 }
 
 float *
-ADSR::getNFData()
+ADSR::getNFData(int nFrames)
 {
 	register int i;
 	register float inc;
@@ -122,35 +122,35 @@ ADSR::getNFData()
 	switch(state)
 	{
 		case ADSR_A:
-			inc=a_delta; m_attack_frames-=BUF_SIZE;
+			inc=a_delta; m_attack_frames-=nFrames;
 			if (m_attack_frames<=0)
 			{
-				inc=(1.0-c_val)/(float)BUF_SIZE;
+				inc=(1.0-c_val)/(float)nFrames;
 				state=ADSR_D;
 				m_decay_frames=d_frames;
 			}
 			break;
 		case ADSR_D:
-			inc=(s_val-1.0)/(float)d_frames; m_decay_frames-=BUF_SIZE;
+			inc=(s_val-1.0)/(float)d_frames; m_decay_frames-=nFrames;
 			if (m_decay_frames<=0)
 			{
-				inc=-(c_val-s_val)/(float)BUF_SIZE;
+				inc=-(c_val-s_val)/(float)nFrames;
 				state=ADSR_S;
 			}
 			break;
 		case ADSR_S:
 			c_val=s_val; inc=0.0; break;
 		case ADSR_R:
-			inc=r_delta; m_release_frames-=BUF_SIZE;
+			inc=r_delta; m_release_frames-=nFrames;
 			if (m_release_frames<=0)
 			{
-				inc=c_val/(float)BUF_SIZE;
+				inc=c_val/(float)nFrames;
 				state=ADSR_OFF;
 			}
 			break;
 		default:
 			inc=0.0; c_val=0.0; break;
 	}
-	i=0; while (i<BUF_SIZE) { buffer[i++] = c_val; c_val+=inc; }
+	i=0; while (i<nFrames) { buffer[i++] = c_val; c_val+=inc; }
 	return buffer;
 }

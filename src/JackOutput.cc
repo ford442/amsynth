@@ -27,7 +27,7 @@ jack_process (jack_nframes_t nframes, void *arg)
 	p = 0;
 	while (p<buf_size)
 	{
-		pt = inbuf = myinput->getNFData();
+		pt = inbuf = myinput->getNFData(BUF_SIZE);
 		
 		q = BUF_SIZE;
 		while (q--)

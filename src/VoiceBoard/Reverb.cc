@@ -22,15 +22,23 @@ Reverb::update()
 	//model.update();
 }
 
-float *
-Reverb::getNFData()
+void
+Reverb::Alloc	(int nFrames)
 {
-	inbuffer = input->getFData();
-	model.processreplace( inbuffer, inbuffer, outbufferL, outbufferR, BUF_SIZE, 1 );
+	outbufferL = new float[nFrames];
+	outbufferR = new float[nFrames];
+	outBuffer  = new float[nFrames*2];
+}
+
+float *
+Reverb::getNFData(int nFrames)
+{
+	inbuffer = input->getFData(nFrames);
+	model.processreplace( inbuffer, inbuffer, outbufferL, outbufferR, nFrames, 1 );
 	// combine the channel buffers into a stereo buffer
 	register int ch = 0;
 	register int idx = 0;
-	for(int i=0; i<BUF_SIZE*2; i++)
+	for(int i=0; i<nFrames*2; i++)
 		outBuffer[i] = ( (ch=1-ch) ? outbufferL[idx] : outbufferR[idx++] );
 	return outBuffer;
 }

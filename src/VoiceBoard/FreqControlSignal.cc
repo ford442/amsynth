@@ -42,23 +42,23 @@ FreqControlSignal::update()
 {
 	mod_amount = (mod_amount_param->getControlValue()/2.0)+0.5;
 }
-
+/*
 float
 FreqControlSignal::GetValue()
 {
 	return pitch_bend_source->getFData()[0] * key_pitch_source->getFData()[0] *
 		( mod_amount*(*lfo->getFData()+1.0) + 1.0 - mod_amount );
 }
-
+*/
 void
-FreqControlSignal::process()
+FreqControlSignal::process(int nFrames)
 {
-	lfo_buf = lfo->getFData();
-	buffer = pitch_bend_source->getFData();
+	lfo_buf = lfo->getFData(nFrames);
+	buffer = pitch_bend_source->getFData(nFrames);
 	register float pitch_bend = buffer[0];
-	register float key_pitch = key_pitch_source->getFData()[0];
+	register float key_pitch = key_pitch_source->getFData(nFrames)[0];
 	register int i;
 	
-	for( i=0; i<BUF_SIZE; i++ ) buffer[i] = pitch_bend*key_pitch *
+	for( i=0; i<nFrames; i++ ) buffer[i] = pitch_bend*key_pitch *
 		( mod_amount*(lfo_buf[i]+1.0) + 1.0 - mod_amount );
 }

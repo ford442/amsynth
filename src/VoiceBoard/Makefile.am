@@ -3,7 +3,6 @@ noinst_LIBRARIES = libVoiceBoard.a
 libVoiceBoard_a_SOURCES = \
 			ADSR.cc ADSR.h \
 			Amplifier.cc Amplifier.h \
-			EnvelopeGenerator.cc EnvelopeGenerator.h \
 			FValue.cc FValue.h \
 			NFValue.cc NFValue.h \
 			Oscillator.cc Oscillator.h \

@@ -26,7 +26,7 @@ class Adder: public FSource {
 	 * @param source the source to no longer be used
 	 */
     void removeInput(FSource & source);
-    inline float *getFData();
+    inline float *getFData(int nFrames);
   private:
     float *_buffer;
     float * inBuffer;

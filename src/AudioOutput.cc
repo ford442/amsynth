@@ -87,7 +87,7 @@ AudioOutput::run()
 	running = 1;
 	while (running)
 	{
-		float *buffer = input->getNFData();
+		float *buffer = input->getNFData(BUF_SIZE);
 #ifdef with_sndfile
 		if( recording )
 			sf_writef_float( sndfile, buffer, BUF_SIZE );

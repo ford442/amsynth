@@ -45,22 +45,24 @@ void
 Mixer::update()
 {
     if (mode_param) mix_mode = (int) mode_param->getValue();
-} float *
-Mixer::getNFData()
+}
+
+float *
+Mixer::getNFData(int nFrames)
 {
-    inBuffer1 = input1->getFData();
-    inBuffer2 = input2->getFData();
+    inBuffer1 = input1->getFData(nFrames);
+    inBuffer2 = input2->getFData(nFrames);
 	
 	register int i;
 	if (mix_mode == 0) {
-	    controlBuffer = control->getNFData();
+	    controlBuffer = control->getNFData(nFrames);
 		register float mix;
-    	for (i = 0; i < BUF_SIZE; i++) {
+    	for (i = 0; i < nFrames; i++) {
 			mix = (controlBuffer[i] + 1.0) / 2;
 			buffer[i] = inBuffer1[i] * (1 - mix) + inBuffer2[i] * mix;
 		}
     } else if (mix_mode == 1) {
-		for (i = 0; i < BUF_SIZE; i++)
+		for (i = 0; i < nFrames; i++)
 			buffer[i] = inBuffer1[i] * inBuffer2[i];
     }
     return buffer;

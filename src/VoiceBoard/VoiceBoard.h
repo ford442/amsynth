@@ -24,34 +24,95 @@
 #include "../Preset.h"
 #include "../Parameter.h"
 
-typedef struct voiceboard_process_memory {
-	float	osc_1[BUF_SIZE];
-	float	osc_2[BUF_SIZE];
-	float	lfo_osc_1_acc[BUF_SIZE];
-	float	lfo_osc_1[BUF_SIZE];
-	float	key_pitch[BUF_SIZE];
-	float	freq_mod_mix_amount[BUF_SIZE];
-	float	lfo_freq[BUF_SIZE];
-	float	osc_2_detune[BUF_SIZE];
-	float	osc_2_range[BUF_SIZE];
-	float	osc_mix[BUF_SIZE];
-	float	osc1_pulsewidth[BUF_SIZE];
-	float	osc_1_pulsewidth[BUF_SIZE];
-	float	osc2_pulsewidth[BUF_SIZE];
-	float	osc_2_pulsewidth[BUF_SIZE];
-	float	osc_1_pwm_amount[BUF_SIZE];
-	float	mod_add[BUF_SIZE];
-	float	filter_env[BUF_SIZE];
-	float	amp_env[BUF_SIZE];
-	float	freq[BUF_SIZE];
-	float	freq_mod_mult[BUF_SIZE];
-	float	mod_mult[BUF_SIZE];
-	float	osc2_freq[BUF_SIZE];
-	float	osc1_pw[BUF_SIZE];
-	float	freq_mod_mix[BUF_SIZE];
-	float	osc_mixer[BUF_SIZE];
-	float	osc1_pw_mixer[BUF_SIZE];
-} voiboard_process_memory;
+class VoiceBoardProcessMemory
+{
+public:
+	VoiceBoardProcessMemory	(int bufsize)
+	{
+		osc_1 = new float[bufsize];
+		osc_2 = new float[bufsize];
+		lfo_osc_1_acc = new float[bufsize];
+		lfo_osc_1 = new float[bufsize];
+		key_pitch = new float[bufsize];
+		freq_mod_mix_amount = new float[bufsize];
+		lfo_freq = new float[bufsize];
+		osc_2_detune = new float[bufsize];
+		osc_2_range = new float[bufsize];
+		osc_mix = new float[bufsize];
+		osc1_pulsewidth = new float[bufsize];
+		osc_1_pulsewidth = new float[bufsize];
+		osc2_pulsewidth = new float[bufsize];
+		osc_2_pulsewidth = new float[bufsize];
+		osc_1_pwm_amount = new float[bufsize];
+		mod_add = new float[bufsize];
+		filter_env = new float[bufsize];
+		amp_env = new float[bufsize];
+		freq = new float[bufsize];
+		freq_mod_mult = new float[bufsize];
+		mod_mult = new float[bufsize];
+		osc2_freq = new float[bufsize];
+		osc1_pw = new float[bufsize];
+		freq_mod_mix = new float[bufsize];
+		osc_mixer = new float[bufsize];
+		osc1_pw_mixer = new float[bufsize];
+	}
+	VoiceBoardProcessMemory	()
+	{
+		delete[] osc_1;
+		delete[] osc_2;
+		delete[] lfo_osc_1_acc;
+		delete[] lfo_osc_1;
+		delete[] key_pitch;
+		delete[] freq_mod_mix_amount;
+		delete[] lfo_freq;
+		delete[] osc_2_detune;
+		delete[] osc_2_range;
+		delete[] osc_mix;
+		delete[] osc1_pulsewidth;
+		delete[] osc_1_pulsewidth;
+		delete[] osc2_pulsewidth;
+		delete[] osc_2_pulsewidth;
+		delete[] osc_1_pwm_amount;
+		delete[] mod_add;
+		delete[] filter_env;
+		delete[] amp_env;
+		delete[] freq;
+		delete[] freq_mod_mult;
+		delete[] mod_mult;
+		delete[] osc2_freq;
+		delete[] osc1_pw;
+		delete[] freq_mod_mix;
+		delete[] osc_mixer;
+		delete[] osc1_pw_mixer;
+	}
+		
+	float*	osc_1;
+	float*	osc_2;
+	float*	lfo_osc_1_acc;
+	float*	lfo_osc_1;
+	float*	key_pitch;
+	float*	freq_mod_mix_amount;
+	float*	lfo_freq;
+	float*	osc_2_detune;
+	float*	osc_2_range;
+	float*	osc_mix;
+	float*	osc1_pulsewidth;
+	float*	osc_1_pulsewidth;
+	float*	osc2_pulsewidth;
+	float*	osc_2_pulsewidth;
+	float*	osc_1_pwm_amount;
+	float*	mod_add;
+	float*	filter_env;
+	float*	amp_env;
+	float*	freq;
+	float*	freq_mod_mult;
+	float*	mod_mult;
+	float*	osc2_freq;
+	float*	osc1_pw;
+	float*	freq_mod_mix;
+	float*	osc_mixer;
+	float*	osc1_pw_mixer;
+};
 	
 
 /**
@@ -61,12 +122,12 @@ typedef struct voiceboard_process_memory {
  * time. the VoiceAllocationUnit decides which voices do what etc...
  **/
 
-class VoiceBoard:public NFSource {
+class VoiceBoard : public NFSource {
 public:
-	VoiceBoard(int rate, voiceboard_process_memory *mem);
+	VoiceBoard(int rate, VoiceBoardProcessMemory *mem);
 	virtual ~VoiceBoard();
 	void init();
-	inline float *getNFData();
+	inline float *getNFData(int nFrames);
 	int getState();
 	void triggerOn();
 	void triggerOff();
@@ -83,35 +144,35 @@ private:
 	Preset *_preset;
 
 	// pitch control section
-	FSource *pitch_bend;
-	FValue key_pitch;
-	Multiplier freq, freq_mod_mult;
-	NFValue freq_mod_mix_amount;
-	Mixer freq_mod_mix;
-	FreqControlSignal master_freq;
+	FSource*		pitch_bend;
+	FValue 			key_pitch;
+	Multiplier 		freq, freq_mod_mult;
+	NFValue 		freq_mod_mix_amount;
+	Mixer 			freq_mod_mix;
+	FreqControlSignal 	master_freq;
 
 	// modulation section
-	Oscillator mod_lfo_real;
-	FValue lfo_freq;
-	Multiplier mod_mult;
-	Adder mod_add;
-	ProcessAndHold mod_lfo;
+	Oscillator 		mod_lfo_real;
+	FValue 			lfo_freq;
+	Multiplier 		mod_mult;
+	Adder 			mod_add;
+	ProcessAndHold 		mod_lfo;
 	
 	// oscillator section
-	Oscillator osc1, osc2;
-	Multiplier osc2_freq, osc1_pw;
-	FValue osc2_detune, osc2_range;
-	NFValue osc_mix, osc1_pulsewidth_control, osc2_pulsewidth_control, osc1_pwm_amt;
-	Mixer osc_mixer, osc1_pw_mixer;
+	Oscillator 		osc1, osc2;
+	Multiplier 		osc2_freq, osc1_pw;
+	FValue			osc2_detune, osc2_range;
+	NFValue 		osc_mix, osc1_pulsewidth_control, osc2_pulsewidth_control, osc1_pwm_amt;
+	Mixer 			osc_mixer, osc1_pw_mixer;
 	
 	// filter section
-	FilterControlSignal filter_control;
-	LowPassFilter filter;
-	ADSR filter_env;
+	FilterControlSignal	filter_control;
+	LowPassFilter 		filter;
+	ADSR 			filter_env;
 	
 	// amp section
-	ADSR amp_env;
-	AmpSection amp;
+	ADSR 			amp_env;
+	AmpSection 		amp;
 };
 
 #endif

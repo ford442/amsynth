@@ -30,13 +30,13 @@ SoftLimiter::setInput(FSource & source)
 }
 
 float *
-SoftLimiter::getNFData()
+SoftLimiter::getNFData(int nFrames)
 {
-	buffer = source->getFData();
+	buffer = source->getFData(nFrames);
 
 	register double x;
 	register int i;
-	for (i=0; i<BUF_SIZE*ch; i+=ch)
+	for (i=0; i<nFrames*ch; i+=ch)
 	{
 		x = fabs(buffer[i]);
 		if (ch==2) x=x+fabs(buffer[i+1]);

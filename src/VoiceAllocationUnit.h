@@ -24,7 +24,10 @@ class VoiceAllocationUnit : public NFSource {
 public:
   VoiceAllocationUnit( Config & config );
   virtual ~VoiceAllocationUnit(){};
-  float *getNFData();
+  
+  void	AllocateMemory	(int nFrames);
+  
+  float *getNFData(int nFrames);
   void noteOn(int note, float velocity);
   void noteOff(int note);
   void pwChange( float value );

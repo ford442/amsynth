@@ -4,8 +4,6 @@
 
 #include "FilterControlSignal.h"
 
-const int j = (int)(BUF_SIZE/2);
-
 void
 FilterControlSignal::setLFO( FSource & source )
 {
@@ -60,17 +58,17 @@ FilterControlSignal::update()
 }
 
 void
-FilterControlSignal::process()
+FilterControlSignal::process(int nFrames)
 {
-	env_buf = env_source->getNFData();
-	lfo_buf = lfo->getFData();
-	pitch_buf = pitch_source->getFData();
+	env_buf = env_source->getNFData(nFrames);
+	lfo_buf = lfo->getFData(nFrames);
+	pitch_buf = pitch_source->getFData(nFrames);
 	
 	/* we can cheat - the filter (currently) only uses the cutoff value in
-	 * one element of the buffer (j)
+	 * one element of the buffer - 0 
 	 */
-	env_buf[j] = pitch_buf[j] * env_buf[j] * env_amount 
-			+ ( pitch_buf[j] * vel * cutoff ) * 
-			( (lfo_buf[j]*0.5 + 0.5) * mod_amount + 1-mod_amount );
+	env_buf[0] = pitch_buf[0] * env_buf[0] * env_amount 
+			+ ( pitch_buf[0] * vel * cutoff ) * 
+			( (lfo_buf[0]*0.5 + 0.5) * mod_amount + 1-mod_amount );
 }
 

@@ -18,11 +18,11 @@ Limiter::setInput( FSource & source )
 }
 
 float *
-Limiter::getNFData()
+Limiter::getNFData(int nFrames)
 {
-  buffer = source->getFData();
+  buffer = source->getFData(nFrames);
 
-  for (int i=0; i<BUF_SIZE; i++) {	
+  for (int i=0; i<nFrames; i++) {	
     if (buffer[i] > 1.0) buffer[i] = 1.0;
     else if (buffer[i] < -1.0) buffer[i] = -1.0;
   }

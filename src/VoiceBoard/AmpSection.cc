@@ -35,14 +35,14 @@ AmpSection::update()
 }
 
 inline float*
-AmpSection::getNFData()
+AmpSection::getNFData(int nFrames)
 {
-	buffer = input->getNFData();
-	env_buf = env->getNFData();
-	lfo_buf = lfo->getFData();
+	buffer = input->getNFData(nFrames);
+	env_buf = env->getNFData(nFrames);
+	lfo_buf = lfo->getFData(nFrames);
 	
 	register int i;
-	for( i=0; i<BUF_SIZE; i++ ) 
+	for( i=0; i<nFrames; i++ ) 
 		buffer[i] = buffer[i]*env_buf[i]*vel *
 			( ((lfo_buf[i]*0.5)+0.5)*mod_amount + 1-mod_amount);
 	

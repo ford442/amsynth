@@ -19,7 +19,7 @@ class FValue:public FSource {
   public:
     FValue(float *buf);
     virtual ~FValue();
-    inline float *getFData();
+    inline float *getFData(int nFrames);
     void setValue(float value);
     inline float getValue();
     void setParameter(Parameter & param);

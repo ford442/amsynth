@@ -23,7 +23,7 @@ public:
 	void		setModAmount( Parameter & param );
 
 	void		update();
-	inline float*	getNFData();
+	inline float*	getNFData(int nFrames);
 private:
 	NFSource	*input, *env;
 	FSource		*lfo;

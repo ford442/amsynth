@@ -58,10 +58,10 @@ LowPassFilter::update()
 }
 
 float *
-LowPassFilter::getNFData()
+LowPassFilter::getNFData(int nFrames)
 {
-	float *buffer = source->getNFData();
-	float fc = cutoff->getFData()[(int)(BUF_SIZE/2)];
+	float *buffer = source->getNFData(nFrames);
+	float fc = cutoff->getFData(nFrames)[0];
 	
 	// constrain cutoff
 #define SAFE 0.99 // filter is unstable _AT_ PI
@@ -140,7 +140,7 @@ LowPassFilter::getNFData()
 //	register float foo;
 	// filter (2 cascaded second order filters)
 	// this is the easy bit :)
-	for (int i=0; i<BUF_SIZE; i++) {
+	for (int i=0; i<nFrames; i++) {
 		x = buffer[i];
 		
 		// first 2nd-order unit

@@ -25,7 +25,7 @@
  **/
 class FSource {
 public:
-  virtual float *getFData()
+  virtual float *getFData(int nFrames)
     = 0;
 private:
 };
@@ -38,8 +38,8 @@ private:
  **/
 class NFSource : public FSource {
 public:
-  inline float *getFData(){ return getNFData(); }
-  virtual float *getNFData()
+  inline float *getFData(int nFrames){ return getNFData(nFrames); }
+  virtual float *getNFData(int nFrames)
     = 0;
 };
 

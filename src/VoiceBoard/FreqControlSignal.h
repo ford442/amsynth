@@ -17,9 +17,9 @@ public:
 	void			setKeyPitch( FSource & source );
 	void			setModAmount( Parameter & param );
 	void			update();
-	float			GetValue();
-	void		process();
-	float*		getFData(){ return buffer; };
+//	float			GetValue();
+	void			process(int nFrames);
+	float*			getFData(int nFrames){ return buffer; };
 private:
 	FSource*	lfo;
 	FSource*	pitch_bend_source;

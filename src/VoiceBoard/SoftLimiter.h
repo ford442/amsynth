@@ -19,7 +19,7 @@ class SoftLimiter:public NFSource, public FInput {
     SoftLimiter(float rate);
     virtual ~SoftLimiter();
     void setInput(FSource & source);
-    inline float *getNFData();
+    inline float *getNFData(int nFrames);
 	void isStereo(){ch=2;};
   private:
     FSource *source;

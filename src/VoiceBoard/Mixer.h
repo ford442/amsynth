@@ -36,7 +36,7 @@ public:
 	 */
 	void setMode( Parameter & param );
 	void update();
-	inline float * getNFData();
+	inline float * getNFData(int nFrames);
 
 private:
 	float *buffer;

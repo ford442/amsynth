@@ -17,7 +17,7 @@ class Distortion: public NFSource, public FInput, public UpdateListener
 public:
 	Distortion();
 	void setInput( FSource & input );
-	inline float * getNFData();
+	inline float * getNFData(int nFrames);
 	/**
 	 * @param parameter The Parameter to control the 'drive' of the effect - 
 	 * i.e. the input gain.

@@ -17,7 +17,7 @@ class LowPassFilter : public NFSource, public NFInput, public UpdateListener
 public:
 	LowPassFilter(int rate);
 	virtual ~LowPassFilter(){};
-	inline float * getNFData();
+	inline float * getNFData(int nFrames);
 	void setInput( NFSource & source );
 	/**
 	 * @param fval The FValue which represents the filter cutoff frequency.

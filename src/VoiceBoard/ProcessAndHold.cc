@@ -11,12 +11,12 @@ ProcessAndHold::setInput( FSource & source )
 }
 
 void
-ProcessAndHold::process()
+ProcessAndHold::process(int nFrames)
 {
-	buffer = input->getFData();}
+	buffer = input->getFData(nFrames);}
 
 float *
-ProcessAndHold::getFData()
+ProcessAndHold::getFData(int)
 {
 	return buffer;
 }

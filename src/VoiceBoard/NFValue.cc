@@ -51,10 +51,10 @@ NFValue::getParamVal()
 }
 
 float *
-NFValue::getNFData()
+NFValue::getNFData(int nFrames)
 {
 	register float tmp = getValue();
 	register int i;
-	for (i = 0; i < BUF_SIZE; i++) _buffer[i] = tmp;
+	for (i = 0; i < nFrames; i++) _buffer[i] = tmp;
 	return _buffer;
 }

@@ -19,7 +19,7 @@ class NFValue:public NFSource {
   public:
     NFValue(float *buf);
     virtual ~NFValue();
-    inline float *getNFData();
+    inline float *getNFData(int nFrames);
     void setValue(float value);
     inline float getValue();
     void setParameter(Parameter & param);

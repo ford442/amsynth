@@ -30,7 +30,7 @@ public:
 	 * this as the audio stream, as optimisations may lead to strange artifacts.
 	 */
 	void setCInput(NFSource & source);
-	inline float *getNFData();
+	inline float *getNFData(int nFrames);
 private:
 	NFSource * source1;
 	NFSource * source2;

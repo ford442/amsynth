@@ -66,15 +66,15 @@ Adder::removeInput(FSource & source)
 }
 
 float *
-Adder::getFData()
+Adder::getFData(int nFrames)
 {
-	for(int i=0; i<BUF_SIZE; i++) _buffer[i] = 0;
+	for(int i=0; i<nFrames; i++) _buffer[i] = 0;
 
   //get all audio data and accumulate all the input buffers
   for (int input = 0; input < MAX_INPUTS; input++) {
 		if (inputExists[input]) {
-	   	inBuffer = inputs[input]->getFData();
-	   	for (int i = 0; i < BUF_SIZE; i++)
+	   	inBuffer = inputs[input]->getFData(nFrames);
+	   	for (int i = 0; i < nFrames; i++)
 			_buffer[i] += inBuffer[i];
 		}
 	}

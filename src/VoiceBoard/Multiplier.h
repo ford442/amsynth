@@ -20,7 +20,7 @@ public:
 	virtual ~Multiplier();
 	void addInput(FSource & source);
 	void removeInput(FSource & source);
-	inline float *getFData();
+	inline float *getFData(int nFrames);
 private:
 	float *_buffer;
 	float *inBuffer;
