@@ -24,7 +24,6 @@ VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	osc1_pw			(mem->osc1_pw),
 	osc2_detune		(mem->osc_2_detune),
 	osc2_range		(mem->osc_2_range),
-	osc1_pulsewidth_control	(mem->osc_1_pulsewidth),
 	osc2_pulsewidth_control	(mem->osc_2_pulsewidth),
 	osc1_pwm_amt		(mem->osc_1_pwm_amount),
 	osc1_pw_mixer		(mem->osc1_pw_mixer),
@@ -70,12 +69,11 @@ VoiceBoard::init()
 	/* 
 	 * oscillator section
 	 */
-	osc1_pulsewidth_control.setParameter( parameter("osc1_pulsewidth") );
+	parameter("osc1_pulsewidth").addUpdateListener (*this);
 	
-	osc1.setPulseWidth( osc1_pulsewidth_control );
 	osc1.setWaveform( parameter("osc1_waveform") );
 //	osc1.setInputSig( &master_freq );
-	osc1.setInput( master_freq );
+//	osc1.setInput( master_freq );
 	
 	osc1.setSync( parameter("osc2_sync"), osc2 );
 
@@ -133,6 +131,8 @@ VoiceBoard::update	()
 	else 
 		mOsc1Vol = mOsc2Vol = 0.0;
 
+	mOsc1PulseWidth = parameter("osc1_pulsewidth").getControlValue ();
+
 	mFilterModAmt = (parameter("filter_mod_amount").getControlValue ()+1.0)/2.0;
 	mFilterEnvAmt = parameter("filter_env_amount").getControlValue ();
 	mFilterCutoff = parameter("filter_cutoff").getControlValue ();
@@ -145,10 +145,14 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	mod_lfo.process (64);
 	master_freq.process (64);
 
+	float osc1freq = master_freq.getFData(64)[0];
+	float osc1pw = mOsc1PulseWidth;
+
 	float env_f = *filter_env.getNFData (64);
         float cutoff = mem->key_pitch[0] * env_f * mFilterEnvAmt + ( mem->key_pitch[0] * mKeyVelocity * mFilterCutoff ) * ( (mem->lfo_osc_1[0]*0.5 + 0.5) * mFilterModAmt + 1-mFilterModAmt );
 
-	float *osc1buf = osc1.getNFData (64);
+	float *osc1buf = mem->osc_1;
+	osc1.Process64Samples (osc1buf, osc1freq, osc1pw);
 	float *osc2buf = osc2.getNFData (64);
 
 	for (int i=0; i<64; i++)

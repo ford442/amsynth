@@ -36,8 +36,6 @@ public:
 		lfo_freq = new float[bufsize];
 		osc_2_detune = new float[bufsize];
 		osc_2_range = new float[bufsize];
-		osc1_pulsewidth = new float[bufsize];
-		osc_1_pulsewidth = new float[bufsize];
 		osc2_pulsewidth = new float[bufsize];
 		osc_2_pulsewidth = new float[bufsize];
 		osc_1_pwm_amount = new float[bufsize];
@@ -62,8 +60,6 @@ public:
 		delete[] lfo_freq;
 		delete[] osc_2_detune;
 		delete[] osc_2_range;
-		delete[] osc1_pulsewidth;
-		delete[] osc_1_pulsewidth;
 		delete[] osc2_pulsewidth;
 		delete[] osc_2_pulsewidth;
 		delete[] osc_1_pwm_amount;
@@ -87,8 +83,6 @@ public:
 	float*	lfo_freq;
 	float*	osc_2_detune;
 	float*	osc_2_range;
-	float*	osc1_pulsewidth;
-	float*	osc_1_pulsewidth;
 	float*	osc2_pulsewidth;
 	float*	osc_2_pulsewidth;
 	float*	osc_1_pwm_amount;
@@ -156,12 +150,13 @@ private:
 	
 	// oscillator section
 	Oscillator 		osc1, osc2;
+	float			mOsc1PulseWidth;
 	float			mOsc1Vol;
 	float			mOsc2Vol;
 	float			mRingModAmt;
 	Multiplier 		osc2_freq, osc1_pw;
 	FValue			osc2_detune, osc2_range;
-	NFValue 		osc1_pulsewidth_control, osc2_pulsewidth_control, osc1_pwm_amt;
+	NFValue 		osc2_pulsewidth_control, osc1_pwm_amt;
 	Mixer			osc1_pw_mixer;
 	
 	// filter section
