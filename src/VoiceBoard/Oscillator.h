@@ -6,7 +6,6 @@
 
 #include "Synth--.h"
 #include "../Parameter.h"
-#include "FreqControlSignal.h"
 
 /**
  * @brief An Audio Oscillator unit.
@@ -30,7 +29,6 @@ public:
 	inline float *getNFData(int nFrames);
 	void	Process64Samples	(float*, float freq_hz, float pw);
   	void setInput(FSource &input);
-    void setInputSig(FreqControlSignal *signal);
 	/**
 	 * @param source The FSource which will control the puslewidth of the 
 	 * waveform where appropriate (saw & square waves).
@@ -62,7 +60,6 @@ public:
 	 */
 	void setSync( Parameter & param, Oscillator & osc );
   private:
-    FreqControlSignal *inputSig;
   	FSource *input;
 	FSource *pulseWidth;
     float *inBuffer, *outBuffer;

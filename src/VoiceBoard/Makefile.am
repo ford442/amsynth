@@ -7,7 +7,4 @@ libVoiceBoard_a_SOURCES = \
 			Oscillator.cc Oscillator.h \
 			VoiceBoard.cc VoiceBoard.h \
 			LowPassFilter.cc LowPassFilter.h \
-			ProcessAndHold.cc ProcessAndHold.h \
-			FreqControlSignal.cc FreqControlSignal.h \
-			AmpSection.cc AmpSection.h \
 			Synth--.h

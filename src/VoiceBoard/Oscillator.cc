@@ -28,12 +28,6 @@ Oscillator::~Oscillator()
 }
 
 void
-Oscillator::setInputSig(FreqControlSignal *signal)
-{
-    inputSig = signal;
-}
-
-void
 Oscillator::setInput(FSource &fsource)
 {
     input = &fsource;
@@ -102,8 +96,6 @@ Oscillator::getNFData(int nFrames)
 	}
     else
 	{
-		inputSig->process (nFrames);
-		freq = inputSig->getFData(nFrames)[0];
 	}
 	sync_c = 0;
     sync_offset = nFrames + 1;
