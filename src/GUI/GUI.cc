@@ -13,9 +13,9 @@
 #include <gtk--/adjustment.h>
 #include <gtk--/spinbutton.h>
 
+#include "../AudioOutput.h"
 #include "../MidiController.h"
 #include "../Preset.h"
-
 #include "EditorPanel.h"
 
 #include "splash.xpm"

@@ -6,9 +6,11 @@
 #include "../PresetController.h"
 #include "../VoiceAllocationUnit.h"
 #include <stdio.h>
+#include <iostream>
 
 using SigC::slot;
 using SigC::bind;
+using std::cout;
 
 PresetControllerView::PresetControllerView( int pipe_d, VoiceAllocationUnit & vau )
 {
