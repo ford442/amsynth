@@ -6,18 +6,16 @@
 #define _REVERB_H
 
 #include "revmodel.hpp"
-#include "Synth--.h"
 #include "../UpdateListener.h"
 #include "../Parameter.h"
 
-class Reverb:public FInput, public NFSource, public UpdateListener {
+class Reverb : public UpdateListener
+{
   public:
     Reverb();
 
 	void	Alloc	(int nFrames);
     
-    void setInput(FSource & input){ this->input = &input; };
-    float *getNFData(int nFrames);
 	void update();
 	void setRoomSize( Parameter & param )
 	{ roomSizeParam = &param; param.addUpdateListener(*this); };
@@ -38,7 +36,6 @@ class Reverb:public FInput, public NFSource, public UpdateListener {
 
   private:
 	revmodel model;
-    FSource *input;
 	float *inbuffer, *outbufferL, *outbufferR, *outBuffer;
 	Parameter *roomSizeParam, *dampParam, *wetParam, *dryParam, *widthParam, *modeParam;
 };
