@@ -7,14 +7,17 @@
 #include "Oscillator.h"
 
 Oscillator::Oscillator(int rate, float *buf)
+:	outBuffer (buf)
+,	rads (0.0)
+,	random (0)
+,	waveform (Waveform_Sine)
+,	rate (rate)
+,	random_count (0)
+,	period (0)
+,	sync (0)
+,	syncOsc (0)
 {
-    outBuffer = buf;
-    rads = 0.0;
-    waveform = 1;
-    random = 0;
-    random_count = 0;
-    this->rate = rate;
-    twopi_rate = TWO_PI / rate;
+    twopi_rate = (float) TWO_PI / rate;
     sync = period = 0;
 }
 
@@ -64,7 +67,7 @@ Oscillator::update()
 }
 
 void
-Oscillator::Process64Samples	(float *buffer, float freq_hz, float pw)
+Oscillator::ProcessSamples	(float *buffer, int numSamples, float freq_hz, float pw)
 {
 	freq = freq_hz;
 	mPulseWidth = pw;
@@ -76,11 +79,11 @@ Oscillator::Process64Samples	(float *buffer, float freq_hz, float pw)
 	
 	switch (waveform)
 	{
-	case Waveform_Sine:	doSine (buffer, 64);	break;
-	case Waveform_Pulse:	doSquare (buffer, 64);	break;
-	case Waveform_Saw:	doSaw (buffer, 64);	break;
-	case Waveform_Noise:	doNoise (buffer, 64);	break;
-	case Waveform_Random:	doRandom (buffer, 64);	break;
+	case Waveform_Sine:		doSine		(buffer, numSamples);	break;
+	case Waveform_Pulse:	doSquare	(buffer, numSamples);	break;
+	case Waveform_Saw:		doSaw		(buffer, numSamples);	break;
+	case Waveform_Noise:	doNoise		(buffer, numSamples);	break;
+	case Waveform_Random:	doRandom	(buffer, numSamples);	break;
 	default: break;
 	}
 	
@@ -135,7 +138,7 @@ float
 Oscillator::saw(float foo)
 {
     foo = fmod((float)foo, (float)TWO_PI);
-    register float t = (foo / (2 * PI));
+    register float t = (float) (foo / (2 * PI));
     register float a = (mPulseWidth + 1) / 2;
     if (t < a / 2)
 	return 2 * t / a;
@@ -170,7 +173,12 @@ Oscillator::doRandom(float *buffer, int nFrames)
     for (int i = 0; i < nFrames; i++) {
 	if (random_count > period) {
 	    random_count = 0;
-	    random = ((float)::random() / (RAND_MAX / 2)) - 1.0;
+		random = 
+#ifdef _WINDOWS
+			0.0;
+#else
+			((float)::random() / (RAND_MAX / 2)) - 1.0;
+#endif
 	}
 	random_count++;
 	buffer[i] = random;
@@ -181,5 +189,10 @@ void
 Oscillator::doNoise(float *buffer, int nFrames)
 {
     for (int i = 0; i < nFrames; i++)
-	buffer[i] = ((float)::random() / (RAND_MAX / 2)) - 1.0;
+		buffer[i] = 
+#ifdef _WINDOWS
+		0;
+#else
+		((float)::random() / (RAND_MAX / 2)) - 1.0;
+#endif
 }

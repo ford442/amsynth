@@ -6,13 +6,15 @@
 
 VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	// call object constructors with parameters
-	
+	osc				(rate, mem->osc_1),
 	lfo1			(rate, mem->lfo_osc_1),
 	osc1			(rate, mem->osc_1),
 	osc2			(rate, mem->osc_2),
 	filter			(rate), 
 	filter_env		(rate,mem->filter_env), 
-	amp_env			(rate,mem->amp_env)
+	amp_env			(rate,mem->amp_env),
+	mPitchBend		(1),
+	mKeyPitch		(440)
 {
 	this->rate = rate;
 	this->mem = mem;
@@ -26,14 +28,14 @@ VoiceBoard::UpdateParameter	(Param param, float value)
 	{
 	case kAmpModAmount:	mAmpModAmount = (value+1.0)/2.0;break;
 	case kLFOFreq:		mLFO1Freq = value; 		break;
-	case kLFOWaveform:	lfo1.SetWaveform ((Oscillator::Waveform) value);
+	case kLFOWaveform:	lfo1.SetWaveform ((Oscillator::Waveform) (int)value);
 				break;
 	case kFreqModAmount:	mFreqModAmount=(value/2.0)+0.5;	break;
 	
-	case kOsc1Waveform:	osc1.SetWaveform ((Oscillator::Waveform) value);
+	case kOsc1Waveform:	osc1.SetWaveform ((Oscillator::Waveform) (int)value);
 				break;
 	case kOsc1Pulsewidth:	mOsc1PulseWidth = value;	break;
-	case kOsc2Waveform:	osc2.SetWaveform ((Oscillator::Waveform) value);
+	case kOsc2Waveform:	osc2.SetWaveform ((Oscillator::Waveform) (int)value);
 				break;
 	case kOsc2Pulsewidth:	mOsc2PulseWidth = value;	break;
 	case kOsc2Octave:	mOsc2Octave = value;		break;
@@ -69,13 +71,13 @@ VoiceBoard::SetPitchBend	(float val)
 }
 
 void
-VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
+VoiceBoard::ProcessSamplesMix	(float *buffer, int numSamples, float vol)
 {
 	//
 	// Control Signals
 	//
 	float *lfo1buf = mem->lfo_osc_1;
-	lfo1.Process64Samples (lfo1buf, mLFO1Freq, 0);
+	lfo1.ProcessSamples (lfo1buf, numSamples, mLFO1Freq, 0);
 
 	float osc1freq = mPitchBend*mKeyPitch * ( mFreqModAmount*(lfo1buf[0]+1.0) + 1.0 - mFreqModAmount );
 	float osc1pw = mOsc1PulseWidth;
@@ -83,7 +85,7 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	float osc2freq = osc1freq * mOsc2Detune * mOsc2Octave;
 	float osc2pw = mOsc2PulseWidth;
 
-	float env_f = *filter_env.getNFData (64);
+	float env_f = *filter_env.getNFData (numSamples);
         float cutoff = mKeyPitch * env_f * mFilterEnvAmt + ( mKeyPitch * mKeyVelocity * mFilterCutoff ) * ( (lfo1buf[0]*0.5 + 0.5) * mFilterModAmt + 1-mFilterModAmt );
 
 	//
@@ -91,8 +93,8 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	//
 	float *osc1buf = mem->osc_1;
 	float *osc2buf = mem->osc_2;
-	osc1.Process64Samples (osc1buf, osc1freq, osc1pw);
-	osc2.Process64Samples (osc2buf, osc2freq, osc2pw);
+	osc1.ProcessSamples (osc1buf, numSamples, osc1freq, osc1pw);
+	osc2.ProcessSamples (osc2buf, numSamples, osc2freq, osc2pw);
 
 	//
 	// Osc Mix
@@ -100,7 +102,7 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	float osc1vol = mOsc1Vol;
 	float osc2vol = mOsc2Vol;
 	if (mRingModAmt == 1.0) osc1vol = osc2vol = 0.0;
-	for (int i=0; i<64; i++)
+	for (int i=0; i<numSamples; i++)
 		osc1buf[i] =
 			osc1vol * osc1buf[i] +
 			osc2vol * osc2buf[i] +
@@ -109,20 +111,20 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	//
 	// VCF
 	//
-	filter.Process64Samples (osc1buf, cutoff, mFilterRes);
+	filter.ProcessSamples (osc1buf, numSamples, cutoff, mFilterRes);
 	
 	//
 	// VCA
 	// 
-	float *ampenvbuf = amp_env.getNFData (64);
-	for (int i=0; i<64; i++) 
+	float *ampenvbuf = amp_env.getNFData (numSamples);
+	for (int i=0; i<numSamples; i++) 
 		osc1buf[i] = osc1buf[i]*ampenvbuf[i]*mKeyVelocity *
 			( ((lfo1buf[i]*0.5)+0.5)*mAmpModAmount + 1-mAmpModAmount);
 
 	//
 	// Copy, with overall volume
 	//
-	for (int i=0; i<64; i++) buffer[i] += (osc1buf[i] * vol);
+	for (int i=0; i<numSamples; i++) buffer[i] += (osc1buf[i] * vol);
 }
 
 int 

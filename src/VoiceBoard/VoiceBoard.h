@@ -60,7 +60,9 @@ public:
 
 	void	UpdateParameter		(Param, float);
 
-	void	Process64SamplesMix	(float *buffer, float vol);
+	void	ProcessSamplesMix	(float *buffer, int numSamples, float vol);
+
+	Oscillator osc;
 
 private:
 
