@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <list>
 #include <sys/types.h>
-#include <sys/wait.h>
 
 #include <gtk--/adjustment.h>
 #include <gtk--/spinbutton.h>
