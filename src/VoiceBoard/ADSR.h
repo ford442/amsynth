@@ -11,8 +11,8 @@
 #ifndef _ADSR_H
 #define _ADSR_H
 
-#include "FValue.h"
-#include "NFValue.h"
+#include "../UpdateListener.h"
+#include "../Parameter.h"
 
 /**
  * @class ADSR
@@ -21,10 +21,10 @@
  * ADSR is an implementation of the class Attack-Decay-Sustain-Release
  * contour generators found in nearly all analogue synths..
  */
-class ADSR : public NFSource, public UpdateListener {
+class ADSR : public UpdateListener {
   public:
     ADSR(int rate, float *buf);
-    inline float *getNFData(int nFrames);
+    float *getNFData(int nFrames);
 	/**
 	 * Send a trigger on message to the envelope.
 	 * This will cause the envelope to enter its attack stage.

@@ -10,7 +10,6 @@
 Oscillator::Oscillator(int rate, float *buf)
 {
     outBuffer = buf;
-    pulseWidth = 0;
     rads = 0.0;
     waveform = 1;
     waveParam = 0;
@@ -20,17 +19,10 @@ Oscillator::Oscillator(int rate, float *buf)
     twopi_rate = TWO_PI / rate;
     syncParam = 0;
     sync = period = 0;
-	input = 0;
 }
 
 Oscillator::~Oscillator()
 {
-}
-
-void
-Oscillator::setInput(FSource &fsource)
-{
-    input = &fsource;
 }
 
 void 
@@ -48,12 +40,6 @@ Oscillator::setSync(Parameter & param, Oscillator & osc)
     syncOsc = &osc;
     param.addUpdateListener(*this);
     update();
-}
-
-void 
-Oscillator::setPulseWidth(FSource & source)
-{
-    pulseWidth = &source;
 }
 
 void 
@@ -83,51 +69,6 @@ Oscillator::update()
 		if(syncOsc)
 			syncOsc->reset( 4096, 4096 );
 	}
-}
-
-float *
-Oscillator::getNFData(int nFrames)
-{
-    // do we really need to track the frequency _every_ sample??
-	if (input)
-	{
-	    inBuffer = input->getFData(nFrames);
-		freq = inBuffer[0];
-	}
-    else
-	{
-	}
-	sync_c = 0;
-    sync_offset = nFrames + 1;
-	
-    reset_cd = reset_offset;
-    
-	if (pulseWidth)	mPulseWidth = pulseWidth->getFData(nFrames)[0];
-	else		mPulseWidth = 0;
-
-    // any decision statements are BAD in real-time code...
-    switch (waveform) {
-	case 0:
-		doSine(outBuffer, nFrames);
-		break;
-	case 1:
-		doSquare(outBuffer, nFrames);
-		break;
-	case 2:
-		doSaw(outBuffer, nFrames);
-		break;
-	case 3:
-		doNoise(outBuffer, nFrames);
-		break;
-	case 4:
-		doRandom(outBuffer, nFrames);
-		break;
-	default:
-		break;
-	}
-	if(sync)
-		syncOsc->reset( sync_offset, (int)(rate/freq) );
-    return outBuffer;
 }
 
 void

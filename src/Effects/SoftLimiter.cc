@@ -24,48 +24,6 @@ SoftLimiter::~SoftLimiter()
 }
 
 void
-SoftLimiter::setInput(FSource & source)
-{
-    this->source = &source;
-}
-
-float *
-SoftLimiter::getNFData(int nFrames)
-{
-	buffer = source->getFData(nFrames);
-
-	register double x;
-	register int i;
-	for (i=0; i<nFrames*ch; i+=ch)
-	{
-		x = fabs(buffer[i]);
-		if (ch==2) x=x+fabs(buffer[i+1]);
-		
-		if (x>xpeak) xpeak=(1-release)*xpeak + attack*(x-xpeak);
-		else xpeak=(1-release)*xpeak;
-			
-		if (xpeak>0){
-//			x = 1/xpeak;
-			x = log(xpeak);
-			x -= thresh;
-			if (x<0) x = 0;
-//			x *= ((1/Ratio)-1); 
-			/* 1<= Ratio < infinity = compressor
-			   ratio=infinity = limiter
-			   0 < ratio < 1 = expander
-			   0 = gate
-			*/
-			else x *= -1;
-			x = exp(x);
-		} else x=1;
-		
-		if (ch==2) buffer[i+1]*=x;
-		buffer[i] *= x;
-	}
-    return buffer;
-}
-
-void
 SoftLimiter::Process64Samples	(float *l, float *r)
 {
 	register double x;

@@ -13,12 +13,6 @@ Distortion::Distortion()
 	done = 0;
 }
 
-void
-Distortion::setInput( FSource & input )
-{
-    this->input = &input;
-}
-
 void 
 Distortion::setDrive(Parameter & param)
 {
@@ -59,60 +53,7 @@ Distortion::update()
 		crunch=1-crunchParam->getControlValue();
 	}
 }
-/*
-float *
-Distortion::getNFData(int nFrames)
-{
-    buffer = input->getFData(nFrames);
-    register float x, s;
-	if(crunch==0)crunch=0.01;
-	// LOGDISTORT (3lines)
-	//register float k;
-	//if (crunch<0.001) return buffer;
-	//k=log(crunch+1);
-	
-	for (int i = 0; i < nFrames; i++) {
-//		y = drive * buffer[i];
-		// LIMITDISTORT.
-		//x = buffer[i]*drive;
-		//if (x<0) s=-1; else s=1;
-		//x *= s;
-		//if (x>1) x=1+((x-1)*crunch);
-		//buffer[i]=s*x;
-		
-		
-		// LOGDISTORT (5lines)
-		//x=buffer[i]*drive;
-		//if (x<0) s=-1; else s=1;
-		//x*=s;
-		//x=log(crunch*x +1)/k;
-		//buffer[i]=x*s;
 
-		// EXPDISTORT (3lines)
-		x=buffer[i]*drive;if(x<0) s=-1; else s=1; x*=s;
-		x=pow(x,crunch);
-		buffer[i]=x*s;
-		
-//		x=x-(x*x*crunch);
-//		y=fabs(x);		
-//		buffer[i] = 0;
-//		buffer[i] = x - (x*x*x)*crunch;
-		
-		//if (y < 0) x = -y;
-		//else x = y;
-			
-		//x = x - ((x * x)*4);
-		
-		//if (y < 0) y = -x;
-		//else y = x;
-	
-		//buffer[i] = y;
-		
-//		buffer[i] = x*((y*y)*4);
-	}
-	return buffer;
-}
-*/
 void
 Distortion::Process64Samples	(float *buffer)
 {

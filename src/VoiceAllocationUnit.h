@@ -12,7 +12,6 @@
 
 class VoiceBoard;
 class SoftLimiter;
-class FValue;
 class Reverb;
 class Distortion;
 
@@ -41,7 +40,6 @@ public:
 private:
   int max_voices;
   void purgeVoices();
-  FValue *pw_val;
   float _pitch[128];
   char keyPressed[128], sustain;
   bool	active[128];

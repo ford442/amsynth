@@ -1,11 +1,9 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  */
 
 #include "VoiceAllocationUnit.h"
 #include "VoiceBoard/VoiceBoard.h"
-#include "VoiceBoard/FValue.h"
-#include "VoiceBoard/NFValue.h"
 #include "Effects/SoftLimiter.h"
 #include "Effects/Reverb.h"
 #include "Effects/Distortion.h"
@@ -14,7 +12,6 @@
 #include <math.h>
 
 static VoiceBoardProcessMemory* process_memory;
-static float pw_val_buf[4096];
 
 using std::cout;
 
@@ -27,7 +24,6 @@ VoiceAllocationUnit::VoiceAllocationUnit( Config & config )
 #endif
 
 	limiter = new SoftLimiter (config.sample_rate);
-	pw_val = new FValue (pw_val_buf);
 	reverb = new Reverb;
 	distortion = new Distortion;
 	
@@ -54,7 +50,6 @@ VoiceAllocationUnit::~VoiceAllocationUnit	()
 {
 	for (int i=0; i<128; i++) delete _voices[i];
 	delete limiter;
-	delete pw_val;
 	delete reverb;
 	delete distortion;
 }

@@ -12,17 +12,12 @@
 /**
  * A 24 dB/ocatave resonant low-pass filter.
  **/
-class LowPassFilter : public NFSource, public NFInput, public UpdateListener
+class LowPassFilter : public UpdateListener
 {
 public:
 	LowPassFilter(int rate);
 	virtual ~LowPassFilter(){};
-	inline float * getNFData(int nFrames);
-	void setInput( NFSource & source );
-	/**
-	 * @param fval The FValue which represents the filter cutoff frequency.
-	 */
-	void setCFreq( FSource & fval );
+	
 	void setCutoff( Parameter & param );
 	/**
 	 * @param param The Parameter which controls the resonance of the filter.
@@ -39,8 +34,6 @@ public:
 private:
 	Parameter * cutoff_param;
 	Parameter * res_param;
-	NFSource * source;
-	FSource * cutoff;
 	int rate;
 	float nyquist;
 	double a0, a1, a2, b1, b2, res;

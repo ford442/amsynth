@@ -13,7 +13,7 @@
  * Provides several different output waveforms (sine, saw, square, noise, 
  * random).
  */
-class Oscillator:public NFSource, public FInput, public UpdateListener
+class Oscillator: public UpdateListener
 {
 public:
 	enum { 
@@ -26,14 +26,8 @@ public:
 
 	Oscillator(int rate, float *buf);
 	virtual ~Oscillator();
-	inline float *getNFData(int nFrames);
+	
 	void	Process64Samples	(float*, float freq_hz, float pw);
-  	void setInput(FSource &input);
-	/**
-	 * @param source The FSource which will control the puslewidth of the 
-	 * waveform where appropriate (saw & square waves).
-	 */
-	void setPulseWidth(FSource & source);
     void setWaveform(int form);
 	/**
 	 * @param source The Parameter which will control the waveform of the
@@ -60,8 +54,6 @@ public:
 	 */
 	void setSync( Parameter & param, Oscillator & osc );
   private:
-  	FSource *input;
-	FSource *pulseWidth;
     float *inBuffer, *outBuffer;
     float rads, twopi_rate, random, freq;
 	double a0, a1, b1, d; // for the low-pass filter
