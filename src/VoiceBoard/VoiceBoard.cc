@@ -11,19 +11,13 @@ VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	// call object constructors with parameters
 	
 	key_pitch		(mem->key_pitch),
-	freq			(mem->freq),
-	freq_mod_mult		(mem->freq_mod_mult),
-	freq_mod_mix_amount	(mem->freq_mod_mix_amount),
-	freq_mod_mix		(mem->freq_mod_mix),
 	mod_lfo_real		(rate, mem->lfo_osc_1),	
 	lfo_freq		(mem->lfo_freq),	
-	mod_mult		(mem->mod_mult),
 	osc1			(rate, mem->osc_1),
 	osc2			(rate, mem->osc_2),
 	filter			(rate), 
 	filter_env		(rate,mem->filter_env), 
 	amp_env			(rate,mem->amp_env)
-	
 {
 	this->rate = rate;
 	this->mem = mem;

@@ -29,48 +29,30 @@ public:
 	{
 		osc_1 = new float[bufsize];
 		osc_2 = new float[bufsize];
-		lfo_osc_1_acc = new float[bufsize];
 		lfo_osc_1 = new float[bufsize];
 		key_pitch = new float[bufsize];
-		freq_mod_mix_amount = new float[bufsize];
 		lfo_freq = new float[bufsize];
 		filter_env = new float[bufsize];
 		amp_env = new float[bufsize];
-		freq = new float[bufsize];
-		freq_mod_mult = new float[bufsize];
-		mod_mult = new float[bufsize];
-		freq_mod_mix = new float[bufsize];
 	}
 	VoiceBoardProcessMemory	()
 	{
 		delete[] osc_1;
 		delete[] osc_2;
-		delete[] lfo_osc_1_acc;
 		delete[] lfo_osc_1;
 		delete[] key_pitch;
-		delete[] freq_mod_mix_amount;
 		delete[] lfo_freq;
 		delete[] filter_env;
 		delete[] amp_env;
-		delete[] freq;
-		delete[] freq_mod_mult;
-		delete[] mod_mult;
-		delete[] freq_mod_mix;
 	}
 		
 	float*	osc_1;
 	float*	osc_2;
-	float*	lfo_osc_1_acc;
 	float*	lfo_osc_1;
 	float*	key_pitch;
-	float*	freq_mod_mix_amount;
 	float*	lfo_freq;
 	float*	filter_env;
 	float*	amp_env;
-	float*	freq;
-	float*	freq_mod_mult;
-	float*	mod_mult;
-	float*	freq_mod_mix;
 };
 	
 
@@ -113,15 +95,11 @@ private:
 	// pitch control section
 	FSource*		pitch_bend;
 	FValue 			key_pitch;
-	Multiplier 		freq, freq_mod_mult;
-	NFValue 		freq_mod_mix_amount;
-	Mixer 			freq_mod_mix;
 	FreqControlSignal 	master_freq;
 
 	// modulation section
 	Oscillator 		mod_lfo_real;
 	FValue 			lfo_freq;
-	Multiplier 		mod_mult;
 	ProcessAndHold 		mod_lfo;
 	
 	// oscillator section
