@@ -76,7 +76,6 @@ VoiceAllocationUnit::setPreset( Preset & preset )
 	// now we can initialise the voices
 	for( int i=0; i<128; i++ ){
 		_voices[i]->setPreset( *_preset );
-		_voices[i]->setPitchWheel( *pw_val );
 		_voices[i]->setFrequency( (440.0/32.0) * pow(2,((i-9.0)/12.0)) );
 		_voices[i]->init();
 	}

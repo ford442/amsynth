@@ -155,11 +155,6 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 	for (int i=0; i<64; i++) buffer[i] += (osc1buf[i] * vol);
 }
 
-void VoiceBoard::setPitchWheel(FSource & source)
-{
-	pitch_bend = &source;
-}
-
 int 
 VoiceBoard::getState()
 {

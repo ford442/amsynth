@@ -8,7 +8,6 @@
 #include "../PresetController.h"
 #include "../Parameter.h"
 #include "../Preset.h"
-#include "Synth--.h"
 #include "ADSR.h"
 #include "Oscillator.h"
 #include "LowPassFilter.h"
@@ -61,8 +60,6 @@ public:
 	void setVelocity(float velocity);
 	void setFrequency(float frequency);
 	void setPreset(Preset & preset) { _preset = &preset; };
-	void setPitchWheelParam(Parameter & param);
-	void setPitchWheel(FSource & source);
 	void	SetPitchBend		(float);
 	void reset();
 
@@ -73,16 +70,12 @@ private:
 	
 	Parameter &	parameter( string name );
 	int rate;
-	float *buffer;
 	Preset *_preset;
 
 	float			mKeyVelocity;
 	float			mKeyPitch;
 	float			mPitchBend;
 	
-	// pitch control section
-	FSource*		pitch_bend;
-
 	// modulation section
 	Oscillator 		lfo1;
 	float			mLFO1Freq;
