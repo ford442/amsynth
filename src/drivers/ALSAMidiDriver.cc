@@ -26,7 +26,9 @@ ALSAMidiDriver::read(unsigned char *midi_event_buffer)
 
 int ALSAMidiDriver::close()
 {
+#ifdef with_alsa
 	snd_seq_close (seq_handle);
+#endif
 	return 0;
 }
 
