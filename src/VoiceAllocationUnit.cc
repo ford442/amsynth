@@ -3,15 +3,23 @@
  */
 
 #include "VoiceAllocationUnit.h"
+#include "VoiceBoard/VoiceBoard.h"
+#include "VoiceBoard/Adder.h"
+#include "VoiceBoard/SoftLimiter.h"
+#include "VoiceBoard/FValue.h"
+#include "VoiceBoard/NFValue.h"
+#include "VoiceBoard/Reverb.h"
+#include "VoiceBoard/Distortion.h"
+
 #include <iostream>
 #include <math.h>
 
 static VoiceBoardProcessMemory* process_memory;
 static float pw_val_buf[4096];
 
-VoiceAllocationUnit::VoiceAllocationUnit( Config & config ) :
-	limiter	(config.sample_rate),
-	pw_val	(pw_val_buf)
+using std::cout;
+
+VoiceAllocationUnit::VoiceAllocationUnit( Config & config )
 {
 	this->config = &config;
 	max_voices = config.polyphony;
@@ -19,6 +27,11 @@ VoiceAllocationUnit::VoiceAllocationUnit( Config & config ) :
 	cout << "<VoiceAllocationUnit> new VAU created" << endl;
 #endif
 
+	limiter = new SoftLimiter (config.sample_rate);
+	pw_val = new FValue (pw_val_buf);
+	reverb = new Reverb;
+	distortion = new Distortion;
+	
 	AllocateMemory (config.buffer_size);
 	for (int i = 0; i < 128; i++) {
 		keyPressed[i] = 0;
@@ -35,7 +48,16 @@ VoiceAllocationUnit::AllocateMemory (int nFrames)
 {
 	if (process_memory==NULL) delete process_memory;
 	process_memory = new VoiceBoardProcessMemory (nFrames);
-	reverb.Alloc (nFrames);
+	reverb->Alloc (nFrames);
+}
+
+VoiceAllocationUnit::~VoiceAllocationUnit	()
+{
+	for (int i=0; i<128; i++) delete _voices[i];
+	delete limiter;
+	delete pw_val;
+	delete reverb;
+	delete distortion;
 }
 
 void
@@ -43,19 +65,19 @@ VoiceAllocationUnit::setPreset( Preset & preset )
 {
 	_preset = &preset;
 //	master_vol.setParameter( _preset->getParameter("master_vol") );
-	distortion.setDrive( _preset->getParameter("distortion_drive") );
-	distortion.setCrunch( _preset->getParameter("distortion_crunch") );
-	reverb.setDamp( _preset->getParameter("reverb_damp") );
-	reverb.setDry( _preset->getParameter("reverb_dry") );
-	reverb.setMode( _preset->getParameter("reverb_mode") );
-	reverb.setRoomSize( _preset->getParameter("reverb_roomsize") );
-	reverb.setWet( _preset->getParameter("reverb_wet") );
-	reverb.setWidth( _preset->getParameter("reverb_width") );
+	distortion->setDrive( _preset->getParameter("distortion->drive") );
+	distortion->setCrunch( _preset->getParameter("distortion->crunch") );
+	reverb->setDamp( _preset->getParameter("reverb->damp") );
+	reverb->setDry( _preset->getParameter("reverb->dry") );
+	reverb->setMode( _preset->getParameter("reverb->mode") );
+	reverb->setRoomSize( _preset->getParameter("reverb->roomsize") );
+	reverb->setWet( _preset->getParameter("reverb->wet") );
+	reverb->setWidth( _preset->getParameter("reverb->width") );
 	
 	// now we can initialise the voices
 	for( int i=0; i<128; i++ ){
 		_voices[i]->setPreset( *_preset );
-		_voices[i]->setPitchWheel( pw_val );
+		_voices[i]->setPitchWheel( *pw_val );
 		_voices[i]->setFrequency( (440.0/32.0) * pow(2,((i-9.0)/12.0)) );
 		_voices[i]->init();
 	}
@@ -64,7 +86,7 @@ VoiceAllocationUnit::setPreset( Preset & preset )
 void
 VoiceAllocationUnit::pwChange( float value )
 {
-	pw_val.setValue( pow(2,value) );
+	pw_val->setValue( pow(2,value) );
 }
 
 void
@@ -145,7 +167,7 @@ VoiceAllocationUnit::killAllVoices()
 {
 	int i;
 	for (i=0; i<128; i++) active[i] = false;
-	reverb.mute();
+	reverb->mute();
 	config->active_voices = 0;
 }
 
@@ -163,7 +185,7 @@ VoiceAllocationUnit::Process64Samples	(float *l, float *r)
 	for (int i=0; i<128; i++) if (active[i])
 		_voices[i]->Process64SamplesMix (l, 1.0);
 
-	distortion.Process64Samples (l);
-	reverb.Process64Samples (l, l,r);
-	limiter.Process64Samples (l,r);
+//	distortion->Process64Samples (l);
+	reverb->Process64Samples (l, l,r);
+	limiter->Process64Samples (l,r);
 }
