@@ -1,5 +1,5 @@
-	/* amSynth
- * (c) 2002-2003 Nick Dowell
+/* amSynth
+ * (c) 2002-2004 Nick Dowell
  * portions of this file (c) 2003 Darrick Servis
  */
  
@@ -14,6 +14,8 @@
 #include <gtk--/spinbutton.h>
 
 #include "../MidiController.h"
+#include "../Preset.h"
+
 #include "EditorPanel.h"
 
 #include "splash.xpm"
@@ -802,20 +804,20 @@ GUI::preset_new		( )
 void
 GUI::preset_copy	( )
 {
-	clipboard_preset.clone (preset_controller->getCurrentPreset ());
+	clipboard_preset->clone (preset_controller->getCurrentPreset ());
 }
 
 void
 GUI::preset_paste	( )
 {
-	preset_controller->getCurrentPreset().clone (clipboard_preset);
+	preset_controller->getCurrentPreset().clone (*clipboard_preset);
 }
 
 void
 GUI::preset_paste_as_new( )
 {
 	preset_new ();
-	preset_controller->getCurrentPreset().clone (clipboard_preset);
+	preset_controller->getCurrentPreset().clone (*clipboard_preset);
 }
 
 void

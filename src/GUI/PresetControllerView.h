@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  */
 
 #ifndef _PRESETCONTROLLERVIEW_H
@@ -12,9 +12,10 @@
 #include <string>
 #include <list>
 #include "ParameterView.h"
-#include "../PresetController.h"
-#include "../UpdateListener.h"
-#include "../VoiceAllocationUnit.h"
+
+class PresetController;
+class UpdateListener;
+class VoiceAllocationUnit;
 
 class PresetControllerView : public UpdateListener, public Gtk::HBox {
 public:

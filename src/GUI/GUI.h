@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001-2003 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  */
 
 #ifndef _GUI_H
@@ -23,20 +23,21 @@
 #include <gtk--/fileselection.h> 
 #include <gtk--/fontselection.h>
 
-#include "../PresetController.h"
 #include "PresetControllerView.h"
 #include "ControllerMapDialog.h"
-#include "../UpdateListener.h"
-#include "../Parameter.h"
-#include "../Config.h"
-#include "../VoiceAllocationUnit.h"
-#include "../AudioOutput.h"
+
+class PresetController;
+class Parameter;
+class Preset;
+class VoiceAllocationUnit;
+class GenericOutput;
+class Config;
+class EditorPanel;
 
 namespace Gtk {
 	class Adjustment;
 };
 
-class EditorPanel;
 
 /**
  * @brief The top-level Graphical User Interface
@@ -177,6 +178,6 @@ private:
 	
 	EditorPanel		*editor_panel;
 	
-	Preset			clipboard_preset;
+	Preset			*clipboard_preset;
 };
 #endif

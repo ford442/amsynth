@@ -3,6 +3,8 @@
  */
 
 #include "PresetControllerView.h"
+#include "../PresetController.h"
+#include "../VoiceAllocationUnit.h"
 #include <stdio.h>
 
 using SigC::slot;
