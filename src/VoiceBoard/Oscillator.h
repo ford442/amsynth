@@ -1,5 +1,5 @@
 /* amSynth
- * (c) 2001,2002 Nick Dowell
+ * (c) 2001-2004 Nick Dowell
  */
 #ifndef _OSCILLATOR_H
 #define _OSCILLATOR_H
@@ -14,11 +14,21 @@
  * Provides several different output waveforms (sine, saw, square, noise, 
  * random).
  */
-class Oscillator:public NFSource, public FInput, public UpdateListener {
-  public:
+class Oscillator:public NFSource, public FInput, public UpdateListener
+{
+public:
+	enum { 
+		Waveform_Sine,
+		Waveform_Pulse,
+		Waveform_Saw,
+		Waveform_Noise,
+		Waveform_Random
+	} Waveform;
+
 	Oscillator(int rate, float *buf);
-    virtual ~Oscillator();
-    inline float *getNFData(int nFrames);
+	virtual ~Oscillator();
+	inline float *getNFData(int nFrames);
+	void	Process64Samples	(float*, float freq_hz, float pw);
   	void setInput(FSource &input);
     void setInputSig(FreqControlSignal *signal);
 	/**
@@ -55,22 +65,24 @@ class Oscillator:public NFSource, public FInput, public UpdateListener {
     FreqControlSignal *inputSig;
   	FSource *input;
 	FSource *pulseWidth;
-    float *inBuffer, *outBuffer, *pulseBuffer;
+    float *inBuffer, *outBuffer;
     float rads, twopi_rate, random, freq;
 	double a0, a1, b1, d; // for the low-pass filter
     Parameter *waveParam;
     int waveform, rate, random_count, period;
+
+	float	mPulseWidth;
 	
 	// oscillator sync stuff
 	int reset_offset, reset_cd, sync_c, sync_offset, sync, sync_period, reset_period;
 	Oscillator *syncOsc;
 	Parameter *syncParam;
 	
-    inline void doSine(int nFrames);
-    inline void doSquare(int nFrames);
-    inline void doSaw(int nFrames);
-    inline void doNoise(int nFrames);
-	inline void doRandom(int nFrames);
+    inline void doSine(float*, int nFrames);
+    inline void doSquare(float*, int nFrames);
+    inline void doSaw(float*, int nFrames);
+    inline void doNoise(float*, int nFrames);
+	inline void doRandom(float*, int nFrames);
 	inline float sqr(float foo);
 	inline float saw(float foo);
 };

@@ -10,7 +10,6 @@
 Oscillator::Oscillator(int rate, float *buf)
 {
     outBuffer = buf;
-    pulseBuffer = new float[1];
     pulseWidth = 0;
     rads = 0.0;
     waveform = 1;
@@ -26,7 +25,6 @@ Oscillator::Oscillator(int rate, float *buf)
 
 Oscillator::~Oscillator()
 {
-    delete[] pulseBuffer;
 }
 
 void
@@ -62,7 +60,6 @@ void
 Oscillator::setPulseWidth(FSource & source)
 {
     pulseWidth = &source;
-    delete[] pulseBuffer;
 }
 
 void 
@@ -113,28 +110,25 @@ Oscillator::getNFData(int nFrames)
 	
     reset_cd = reset_offset;
     
-	if (pulseWidth) {
-		pulseBuffer = pulseWidth->getFData(nFrames);
-    } else {
-		pulseBuffer[0] = 0;
-    }
+	if (pulseWidth)	mPulseWidth = pulseWidth->getFData(nFrames)[0];
+	else		mPulseWidth = 0;
 
     // any decision statements are BAD in real-time code...
     switch (waveform) {
 	case 0:
-		doSine(nFrames);
+		doSine(outBuffer, nFrames);
 		break;
 	case 1:
-		doSquare(nFrames);
+		doSquare(outBuffer, nFrames);
 		break;
 	case 2:
-		doSaw(nFrames);
+		doSaw(outBuffer, nFrames);
 		break;
 	case 3:
-		doNoise(nFrames);
+		doNoise(outBuffer, nFrames);
 		break;
 	case 4:
-		doRandom(nFrames);
+		doRandom(outBuffer, nFrames);
 		break;
 	default:
 		break;
@@ -144,11 +138,35 @@ Oscillator::getNFData(int nFrames)
     return outBuffer;
 }
 
+void
+Oscillator::Process64Samples	(float *buffer, float freq_hz, float pw)
+{
+	freq = freq_hz;
+	mPulseWidth = pw;
+	
+	sync_c = 0;
+	sync_offset = 65;
+	
+	reset_cd = reset_offset;
+	
+	switch (waveform)
+	{
+	case Waveform_Sine:	doSine (buffer, 64);	break;
+	case Waveform_Pulse:	doSquare (buffer, 64);	break;
+	case Waveform_Saw:	doSaw (buffer, 64);	break;
+	case Waveform_Noise:	doNoise (buffer, 64);	break;
+	case Waveform_Random:	doRandom (buffer, 64);	break;
+	default: break;
+	}
+	
+	if (sync) syncOsc->reset (sync_offset, (int)(rate/freq));
+}
+
 void 
-Oscillator::doSine(int nFrames)
+Oscillator::doSine(float *buffer, int nFrames)
 {
     for (int i = 0; i < nFrames; i++) {
-		outBuffer[i] = sin(rads += (twopi_rate * freq));
+		buffer[i] = sin(rads += (twopi_rate * freq));
 		//-- sync to other oscillator --
 		if (reset_cd-- == 0){
 			rads = 0.0;					// reset the oscillator
@@ -164,17 +182,17 @@ Oscillator::doSine(int nFrames)
 float 
 Oscillator::sqr(float foo)
 {
-    if ((fmod((float)foo, (float)TWO_PI)) < (pulseBuffer[0] + 1) * PI)
+    if ((fmod((float)foo, (float)TWO_PI)) < (mPulseWidth + 1) * PI)
 	return 1.0;
     else
 	return -1.0;
 }
 
 void 
-Oscillator::doSquare(int nFrames)
+Oscillator::doSquare(float *buffer, int nFrames)
 {
     for (int i = 0; i < nFrames; i++) {
-		outBuffer[i] = sqr(rads += (twopi_rate * freq));
+		buffer[i] = sqr(rads += (twopi_rate * freq));
 		//-- sync to other oscillator --
 		if (reset_cd-- == 0){
 			rads = 0.0;					// reset the oscillator
@@ -193,7 +211,7 @@ Oscillator::saw(float foo)
 {
     foo = fmod((float)foo, (float)TWO_PI);
     register float t = (foo / (2 * PI));
-    register float a = (pulseBuffer[0] + 1) / 2;
+    register float a = (mPulseWidth + 1) / 2;
     if (t < a / 2)
 	return 2 * t / a;
     else if (t > (1 - (a / 2)))
@@ -204,10 +222,10 @@ Oscillator::saw(float foo)
 }
 
 void 
-Oscillator::doSaw(int nFrames)
+Oscillator::doSaw(float *buffer, int nFrames)
 {
     for (int i = 0; i < nFrames; i++) {
-		outBuffer[i] = saw(rads += (twopi_rate * freq));
+		buffer[i] = saw(rads += (twopi_rate * freq));
 		//-- sync to other oscillator --
 		if (reset_cd-- == 0){
 			rads = 0.0;					// reset the oscillator
@@ -221,7 +239,7 @@ Oscillator::doSaw(int nFrames)
 }
 
 void 
-Oscillator::doRandom(int nFrames)
+Oscillator::doRandom(float *buffer, int nFrames)
 {
     register int period = (int) (rate / freq);
     for (int i = 0; i < nFrames; i++) {
@@ -230,13 +248,13 @@ Oscillator::doRandom(int nFrames)
 	    random = ((float)::random() / (RAND_MAX / 2)) - 1.0;
 	}
 	random_count++;
-	outBuffer[i] = random;
+	buffer[i] = random;
     }
 }
 
 void 
-Oscillator::doNoise(int nFrames)
+Oscillator::doNoise(float *buffer, int nFrames)
 {
     for (int i = 0; i < nFrames; i++)
-	outBuffer[i] = ((float)::random() / (RAND_MAX / 2)) - 1.0;
+	buffer[i] = ((float)::random() / (RAND_MAX / 2)) - 1.0;
 }
