@@ -25,11 +25,9 @@ VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	osc1_pw			(mem->osc1_pw),
 	osc2_detune		(mem->osc_2_detune),
 	osc2_range		(mem->osc_2_range),
-	osc_mix			(mem->osc_mix),
 	osc1_pulsewidth_control	(mem->osc_1_pulsewidth),
 	osc2_pulsewidth_control	(mem->osc_2_pulsewidth),
 	osc1_pwm_amt		(mem->osc_1_pwm_amount),
-	osc_mixer		(mem->osc_mixer),
 	osc1_pw_mixer		(mem->osc1_pw_mixer),
 	filter			(rate), 
 	filter_env		(rate,mem->filter_env), 
@@ -92,12 +90,9 @@ VoiceBoard::init()
 	osc2.setPulseWidth( osc2_pulsewidth_control );
 	osc2.setInput( osc2_freq );
 
-	osc_mix.setParameter( parameter("osc_mix") );
-	osc_mixer.setControl( osc_mix );
-	osc_mixer.setInput1( osc1 );
-	osc_mixer.setInput2( osc2 );
-	osc_mixer.setMode( parameter("osc_mix_mode") );
-
+	parameter("osc_mix").addUpdateListener (*this);
+	parameter("osc_mix_mode").addUpdateListener (*this);
+	
 	/*
 	 * filter section
 	 */
@@ -115,7 +110,6 @@ VoiceBoard::init()
 	
 	filter.setCFreq( filter_control );
 	filter.setResonance( parameter("filter_resonance") );
-	//filter.setInput( osc_mixer );
 
 	/* 
 	 * amp section
@@ -132,17 +126,38 @@ VoiceBoard::init()
 }
 
 void
+VoiceBoard::update	()
+{
+	mRingModAmt = parameter("osc_mix_mode").getControlValue ();
+	if (mRingModAmt == 0)
+	{
+		float mix = parameter("osc_mix").getControlValue ();
+		mOsc1Vol = (1-mix)/2.0;
+		mOsc2Vol = (mix+1)/2.0;
+	}
+	else 
+		mOsc1Vol = mOsc2Vol = 0.0;
+}
+
+void
 VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 {
 	mod_lfo.process (64);
-	// note the order:
 	filter_control.process (64);
 	master_freq.process (64);
 
-	float *tmp = osc_mixer.getNFData (64);
-	filter.Process64Samples (tmp);
-	amp.Process64Samples (tmp);
-	for (int i=0; i<64; i++) buffer[i] += (tmp[i] * vol);
+	float *osc1buf = osc1.getNFData (64);
+	float *osc2buf = osc2.getNFData (64);
+
+	for (int i=0; i<64; i++)
+		osc1buf[i] =
+			mOsc1Vol * osc1buf[i] +
+			mOsc2Vol * osc2buf[i] +
+			mRingModAmt * osc1buf[i]*osc2buf[i];
+
+	filter.Process64Samples (osc1buf);
+	amp.Process64Samples (osc1buf);
+	for (int i=0; i<64; i++) buffer[i] += (osc1buf[i] * vol);
 }
 
 void VoiceBoard::setPitchWheel(FSource & source)

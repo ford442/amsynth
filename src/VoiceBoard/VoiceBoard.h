@@ -38,7 +38,6 @@ public:
 		lfo_freq = new float[bufsize];
 		osc_2_detune = new float[bufsize];
 		osc_2_range = new float[bufsize];
-		osc_mix = new float[bufsize];
 		osc1_pulsewidth = new float[bufsize];
 		osc_1_pulsewidth = new float[bufsize];
 		osc2_pulsewidth = new float[bufsize];
@@ -53,7 +52,6 @@ public:
 		osc2_freq = new float[bufsize];
 		osc1_pw = new float[bufsize];
 		freq_mod_mix = new float[bufsize];
-		osc_mixer = new float[bufsize];
 		osc1_pw_mixer = new float[bufsize];
 	}
 	VoiceBoardProcessMemory	()
@@ -67,7 +65,6 @@ public:
 		delete[] lfo_freq;
 		delete[] osc_2_detune;
 		delete[] osc_2_range;
-		delete[] osc_mix;
 		delete[] osc1_pulsewidth;
 		delete[] osc_1_pulsewidth;
 		delete[] osc2_pulsewidth;
@@ -82,7 +79,6 @@ public:
 		delete[] osc2_freq;
 		delete[] osc1_pw;
 		delete[] freq_mod_mix;
-		delete[] osc_mixer;
 		delete[] osc1_pw_mixer;
 	}
 		
@@ -95,7 +91,6 @@ public:
 	float*	lfo_freq;
 	float*	osc_2_detune;
 	float*	osc_2_range;
-	float*	osc_mix;
 	float*	osc1_pulsewidth;
 	float*	osc_1_pulsewidth;
 	float*	osc2_pulsewidth;
@@ -110,7 +105,6 @@ public:
 	float*	osc2_freq;
 	float*	osc1_pw;
 	float*	freq_mod_mix;
-	float*	osc_mixer;
 	float*	osc1_pw_mixer;
 };
 	
@@ -122,7 +116,7 @@ public:
  * time. the VoiceAllocationUnit decides which voices do what etc...
  **/
 
-class VoiceBoard
+class VoiceBoard : public UpdateListener
 {
 public:
 	VoiceBoard(int rate, VoiceBoardProcessMemory *mem);
@@ -138,6 +132,8 @@ public:
 	void setPitchWheelParam(Parameter & param);
 	void setPitchWheel(FSource & source);
 	void reset();
+
+	void	update	();
 private:
 	Parameter &	parameter( string name );
 	int rate;
@@ -161,10 +157,13 @@ private:
 	
 	// oscillator section
 	Oscillator 		osc1, osc2;
+	float			mOsc1Vol;
+	float			mOsc2Vol;
+	float			mRingModAmt;
 	Multiplier 		osc2_freq, osc1_pw;
 	FValue			osc2_detune, osc2_range;
-	NFValue 		osc_mix, osc1_pulsewidth_control, osc2_pulsewidth_control, osc1_pwm_amt;
-	Mixer 			osc_mixer, osc1_pw_mixer;
+	NFValue 		osc1_pulsewidth_control, osc2_pulsewidth_control, osc1_pwm_amt;
+	Mixer			osc1_pw_mixer;
 	
 	// filter section
 	FilterControlSignal	filter_control;
