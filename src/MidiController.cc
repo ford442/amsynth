@@ -176,19 +176,16 @@ MidiController::doMidi()
 
 	case 0xc0:
 	    // program change
-		if (presetController && channel == receiveChannel) 
+		if( presetController->getCurrPresetNumber() != byte )
 		{
-			if( presetController->getCurrPresetNumber() != byte )
-			{
-				_va->killAllVoices();
-				presetController->selectPreset((int) byte);
+			_va->killAllVoices();
+			presetController->selectPreset((int) byte);
 #ifdef _DEBUG
-			cout << "<MidiController> program change: " << (int) byte <<
-			endl;
+		cout << "<MidiController> program change: " << (int) byte <<
+		endl;
 #endif
-			}
-			data = 0xff;
 		}
+		data = 0xff;
 	    break;
 
 	case 0xd0:
