@@ -15,7 +15,6 @@
 #include "NFValue.h"
 #include "Multiplier.h"
 #include "LowPassFilter.h"
-#include "Mixer.h"
 #include "ProcessAndHold.h"
 #include "FreqControlSignal.h"
 #include "AmpSection.h"
