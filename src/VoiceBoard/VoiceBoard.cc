@@ -35,6 +35,7 @@ VoiceBoard::VoiceBoard(int rate, VoiceBoardProcessMemory *mem):
 	
 {
 	this->rate = rate;
+	this->mem = mem;
 }
 
 VoiceBoard::~VoiceBoard()
@@ -101,16 +102,11 @@ VoiceBoard::init()
 	filter_env.setSustain( parameter("filter_sustain") );
 	filter_env.setRelease( parameter("filter_release") );
 	
-	filter_control.setLFO( mod_lfo );
-	filter_control.setEnvelope( filter_env );
-	filter_control.setKeyPitch( key_pitch );
-	filter_control.setModAmount( parameter("filter_mod_amount") );
-	filter_control.setEnvAmount( parameter("filter_env_amount") );
-	filter_control.setCutoffControl( parameter("filter_cutoff") );
+	parameter("filter_mod_amount").addUpdateListener (*this);
+	parameter("filter_env_amount").addUpdateListener (*this);
+	parameter("filter_resonance").addUpdateListener (*this);
+	parameter("filter_cutoff").addUpdateListener (*this);
 	
-	filter.setCFreq( filter_control );
-	filter.setResonance( parameter("filter_resonance") );
-
 	/* 
 	 * amp section
 	 */
@@ -137,14 +133,21 @@ VoiceBoard::update	()
 	}
 	else 
 		mOsc1Vol = mOsc2Vol = 0.0;
+
+	mFilterModAmt = (parameter("filter_mod_amount").getControlValue ()+1.0)/2.0;
+	mFilterEnvAmt = parameter("filter_env_amount").getControlValue ();
+	mFilterCutoff = parameter("filter_cutoff").getControlValue ();
+	mFilterRes = parameter("filter_resonance").getControlValue ();
 }
 
 void
 VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 {
 	mod_lfo.process (64);
-	filter_control.process (64);
 	master_freq.process (64);
+
+	float env_f = *filter_env.getNFData (64);
+        float cutoff = mem->key_pitch[0] * env_f * mFilterEnvAmt + ( mem->key_pitch[0] * mKeyVelocity * mFilterCutoff ) * ( (mem->lfo_osc_1[0]*0.5 + 0.5) * mFilterModAmt + 1-mFilterModAmt );
 
 	float *osc1buf = osc1.getNFData (64);
 	float *osc2buf = osc2.getNFData (64);
@@ -155,7 +158,7 @@ VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 			mOsc2Vol * osc2buf[i] +
 			mRingModAmt * osc1buf[i]*osc2buf[i];
 
-	filter.Process64Samples (osc1buf);
+	filter.Process64Samples (osc1buf, cutoff, mFilterRes);
 	amp.Process64Samples (osc1buf);
 	for (int i=0; i<64; i++) buffer[i] += (osc1buf[i] * vol);
 }
@@ -204,6 +207,6 @@ VoiceBoard::setFrequency(float frequency)
 void 
 VoiceBoard::setVelocity(float velocity)
 {
-	filter_control.setVelocity( velocity );
+	mKeyVelocity = velocity;
 	amp.setVelocity( velocity );
 }

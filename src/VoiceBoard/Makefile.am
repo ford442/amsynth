@@ -13,6 +13,5 @@ libVoiceBoard_a_SOURCES = \
 			LowPassFilter.cc LowPassFilter.h \
 			ProcessAndHold.cc ProcessAndHold.h \
 			FreqControlSignal.cc FreqControlSignal.h \
-			FilterControlSignal.cc FilterControlSignal.h \
 			AmpSection.cc AmpSection.h \
 			Synth--.h

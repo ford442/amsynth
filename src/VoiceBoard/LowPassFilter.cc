@@ -169,11 +169,10 @@ LowPassFilter::getNFData(int nFrames)
 	return buffer;
 }
 
+
 void
-LowPassFilter::Process64Samples	(float *buffer)
+LowPassFilter::Process64Samples	(float *buffer, float fc, float res)
 {
-	float fc = cutoff->getFData(64)[0];
-	
 	// constrain cutoff
 #define SAFE 0.99 // filter is unstable _AT_ PI
 	if (fc>(nyquist*SAFE))

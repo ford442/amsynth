@@ -19,7 +19,6 @@
 #include "Mixer.h"
 #include "ProcessAndHold.h"
 #include "FreqControlSignal.h"
-#include "FilterControlSignal.h"
 #include "AmpSection.h"
 #include "../Preset.h"
 #include "../Parameter.h"
@@ -135,10 +134,15 @@ public:
 
 	void	update	();
 private:
+
+	VoiceBoardProcessMemory	*mem;
+	
 	Parameter &	parameter( string name );
 	int rate;
 	float *buffer;
 	Preset *_preset;
+
+	float			mKeyVelocity;
 
 	// pitch control section
 	FSource*		pitch_bend;
@@ -166,7 +170,10 @@ private:
 	Mixer			osc1_pw_mixer;
 	
 	// filter section
-	FilterControlSignal	filter_control;
+	float			mFilterEnvAmt,
+				mFilterModAmt,
+				mFilterCutoff,
+				mFilterRes;
 	LowPassFilter 		filter;
 	ADSR 			filter_env;
 	
