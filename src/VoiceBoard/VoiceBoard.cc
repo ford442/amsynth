@@ -140,6 +140,17 @@ float *VoiceBoard::getNFData(int nFrames)
 	return amp.getFData(nFrames);
 }
 
+void
+VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
+{
+	mod_lfo.process (64);
+	// note the order:
+	filter_control.process (64);
+	master_freq.process (64);
+	float *tmp = amp.getFData (64);
+	for (int i=0; i<64; i++) buffer[i] += (tmp[i] * vol);
+}
+
 void VoiceBoard::setPitchWheel(FSource & source)
 {
 	pitch_bend = &source;

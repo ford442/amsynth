@@ -7,19 +7,11 @@
 #include <math.h>
 
 static VoiceBoardProcessMemory* process_memory;
-static float master_vol_buf[4096];
 static float pw_val_buf[4096];
-static float zero_buf[4096];
-static float mixer_buf[4096];
-static float amp_buf[4096];
 
 VoiceAllocationUnit::VoiceAllocationUnit( Config & config ) :
-	mixer(mixer_buf),
-	limiter(config.sample_rate),
-	amp(amp_buf),
-	master_vol(master_vol_buf),
-	pw_val(pw_val_buf),
-	zero(zero_buf)
+	limiter	(config.sample_rate),
+	pw_val	(pw_val_buf)
 {
 	this->config = &config;
 	max_voices = config.polyphony;
@@ -30,27 +22,12 @@ VoiceAllocationUnit::VoiceAllocationUnit( Config & config ) :
 	AllocateMemory (config.buffer_size);
 	for (int i = 0; i < 128; i++) {
 		keyPressed[i] = 0;
+		active[i] = false;
 		_voices[i] = new VoiceBoard(config.sample_rate, process_memory);
 		// voices are initialised in setPreset() below...
 	}
   
 	sustain = 0;
-	pw_val.setValue(1);
-	
-	// wire up the components
-	zero.setValue( 0.0 );
-
-	mixer.addInput( zero );
-	
-	amp.addInput( mixer );
-	amp.addInput( master_vol );
-
-	distortion.setInput( amp );
-
-	reverb.setInput( distortion );
-	
-	limiter.isStereo();
-	limiter.setInput( reverb );
 }
 
 void
@@ -65,7 +42,7 @@ void
 VoiceAllocationUnit::setPreset( Preset & preset )
 {
 	_preset = &preset;
-	master_vol.setParameter( _preset->getParameter("master_vol") );
+//	master_vol.setParameter( _preset->getParameter("master_vol") );
 	distortion.setDrive( _preset->getParameter("distortion_drive") );
 	distortion.setCrunch( _preset->getParameter("distortion_crunch") );
 	reverb.setDamp( _preset->getParameter("reverb_damp") );
@@ -107,19 +84,19 @@ VoiceAllocationUnit::noteOn(int note, float velocity)
 	<< " vel:" << velocity << ")" << endl;
 #endif
   
+	purgeVoices ();
+	
 	keyPressed[note] = 1;
 	
-	if (!connected[note])
+	if (!active[note])
 		if( !max_voices || config->active_voices < max_voices )
 		{
 			_voices[note]->reset();
-			activate[note]=1;
+			active[note]=1;
 		}
 
 	_voices[note]->setVelocity(velocity);
 	_voices[note]->triggerOn();
-  
-	purgeVoices();
 }
 
 void 
@@ -144,14 +121,13 @@ VoiceAllocationUnit::purgeVoices()
 #endif
   
 	for (int note = 0; note < 128; note++) {
-		if (connected[note]) {
+		if (active[note]) {
 			if ( _voices[note]->getState()==0 ) {
 #ifdef _DEBUG
 				purged++;
 #endif
-				mixer.removeInput(*_voices[note]);
 				config->active_voices--;
-				connected[note] = 0;
+				active[note] = 0;
 			}
 #ifdef _DEBUG
 			else active++;
@@ -168,13 +144,7 @@ void
 VoiceAllocationUnit::killAllVoices()
 {
 	int i;
-	for( i=0; i<128; i++ ){
-		if( connected[i] ){
-			mixer.removeInput( *_voices[i] );
-			connected[i] = 0;
-			keyPressed[i] = 0;
-		}
-	}
+	for (i=0; i<128; i++) active[i] = false;
 	reverb.mute();
 	config->active_voices = 0;
 }
@@ -188,17 +158,12 @@ VoiceAllocationUnit::set_max_voices	( int voices )
 void
 VoiceAllocationUnit::Process64Samples	(float *l, float *r)
 {
-	for (int i=0; i<128; i++)
-		if (activate[i]==1)
-		{
-			mixer.addInput(*_voices[i]);
-			config->active_voices++;
-			activate[i]=0;
-			connected[i] = 1;
-		}
+	for (int i=0; i<64; i++) l[i] = 0.0;
+	
+	for (int i=0; i<128; i++) if (active[i])
+		_voices[i]->Process64SamplesMix (l, 1.0);
 
-	float *distout = distortion.getNFData (64);
-
-	reverb.Process64Samples (distout, l,r);
+	distortion.Process64Samples (l);
+	reverb.Process64Samples (l, l,r);
 	limiter.Process64Samples (l,r);
 }

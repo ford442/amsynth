@@ -128,6 +128,7 @@ public:
 	virtual ~VoiceBoard();
 	void init();
 	inline float *getNFData(int nFrames);
+	void	Process64SamplesMix	(float *buffer, float vol);
 	int getState();
 	void triggerOn();
 	void triggerOff();

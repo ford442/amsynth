@@ -12,12 +12,11 @@
 /**
  * @brief A distortion (waveshaping) effect unit
  */
-class Distortion: public NFSource, public FInput, public UpdateListener
+class Distortion: public FInput, public UpdateListener
 {
 public:
 	Distortion();
 	void setInput( FSource & input );
-	inline float * getNFData(int nFrames);
 	/**
 	 * @param parameter The Parameter to control the 'drive' of the effect - 
 	 * i.e. the input gain.
@@ -29,6 +28,8 @@ public:
 	 */
 	void setCrunch( Parameter & parameter );
 	void update();
+
+	void	Process64Samples	(float *buffer);
 private:
 	FSource *input;
 	Parameter *driveParam;

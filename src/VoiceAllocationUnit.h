@@ -45,15 +45,12 @@ public:
 private:
   int max_voices;
   void purgeVoices();
-  Adder mixer;
   SoftLimiter limiter;
-  Multiplier amp;
-  NFValue master_vol;
   FValue pw_val;
-  NFValue zero;
   float _pitch[128];
   float outBuffer[BUF_SIZE*2];
-  char keyPressed[128], sustain, connected[128], activate[128];
+  char keyPressed[128], sustain;
+  bool	active[128];
   VoiceBoard *_voices[128];
   Preset *_preset;
   PresetController *_presetController;
