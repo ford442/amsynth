@@ -85,7 +85,8 @@ VoiceAllocationUnit::setPreset( Preset & preset )
 void
 VoiceAllocationUnit::pwChange( float value )
 {
-	pw_val->setValue( pow(2,value) );
+	float newval = pow(2,value);
+	for (int i=0; i<128; i++) _voices[i]->SetPitchBend (newval);
 }
 
 void

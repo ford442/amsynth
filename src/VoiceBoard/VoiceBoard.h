@@ -63,6 +63,7 @@ public:
 	void setPreset(Preset & preset) { _preset = &preset; };
 	void setPitchWheelParam(Parameter & param);
 	void setPitchWheel(FSource & source);
+	void	SetPitchBend		(float);
 	void reset();
 
 	void	UpdateParameter	(Param, float);

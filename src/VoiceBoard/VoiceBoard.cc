@@ -114,10 +114,14 @@ VoiceBoard::UpdateParameter	(Param param, float value)
 }
 
 void
+VoiceBoard::SetPitchBend	(float val)
+{	
+	mPitchBend = val;
+}
+
+void
 VoiceBoard::Process64SamplesMix	(float *buffer, float vol)
 {
-	mPitchBend = pitch_bend->getFData(1)[0];
-	
 	float *lfo1buf = mem->lfo_osc_1;
 	lfo1.Process64Samples (lfo1buf, mLFO1Freq, 0);
 
