@@ -9,7 +9,6 @@
 #include "../Preset.h"
 #include "Synth--.h"
 #include "ADSR.h"
-#include "Amplifier.h"
 #include "Oscillator.h"
 #include "FValue.h"
 #include "NFValue.h"
