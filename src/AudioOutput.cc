@@ -3,6 +3,7 @@
  **/
 
 #include "AudioOutput.h"
+#include "VoiceAllocationUnit.h"
 
 AudioOutput::AudioOutput()
 {
@@ -40,12 +41,6 @@ AudioOutput::init	( Config & config )
 	if (out.open (config) == -1) return -1;
 	
 	return 0;
-}
-
-void
-AudioOutput::setInput( NFSource & source )
-{
-	input = &source;
 }
 
 void
@@ -87,7 +82,7 @@ AudioOutput::run()
 	running = 1;
 	while (running)
 	{
-		float *buffer = input->getNFData(BUF_SIZE);
+		float *buffer = mInput->getNFData(BUF_SIZE);
 #ifdef with_sndfile
 		if( recording )
 			sf_writef_float( sndfile, buffer, BUF_SIZE );

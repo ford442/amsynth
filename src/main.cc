@@ -196,7 +196,7 @@ under certain conditions; see the file COPYING for details\n";
 	}
 	
 	vau = new VoiceAllocationUnit( config ); // were sure of sample_rate now
-	if (enable_audio) out->setInput( *vau );
+	if (enable_audio) out->setInput( vau );
 	
 	presetController->loadPresets(config.current_bank_file.c_str());
 	

@@ -3,10 +3,11 @@
  **/
 
 #include "JackOutput.h"
+#include "VoiceAllocationUnit.h"
 #include <iostream>
 
 #ifdef with_jack
-NFSource	*myinput;
+VoiceAllocationUnit	*myinput;
 float		*inbuf, *pt;
 float		*lout, *rout;
 jack_port_t 	*l_port, *r_port;
@@ -135,21 +136,12 @@ JackOutput::init	( Config & config )
 
 
 void
-JackOutput::setInput( NFSource & source )
+JackOutput::setInput( VoiceAllocationUnit* source )
 {
 #ifdef with_jack
-	myinput = &source;
+	myinput = source;
 #endif
-}
-
-void
-JackOutput::startRecording()
-{
-}
-
-void
-JackOutput::stopRecording()
-{
+	GenericOutput::setInput (source);
 }
 
 void 

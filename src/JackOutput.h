@@ -18,7 +18,7 @@ class JackOutput : public GenericOutput {
 public:
 //			JackOutput	( );
 	virtual		~JackOutput	( ) {};
-	void		setInput	( NFSource & source );
+	void		setInput	( VoiceAllocationUnit* );
 	
 	int		init		( Config & config );// returns 0 on success
 	void		run		( );
@@ -26,9 +26,7 @@ public:
 	
 	string		get_error_msg	( )		{ return error_msg; };
 	
-	int		canRecord	( )		{ return 0; };
-	void		startRecording	( );
-	void		stopRecording	( );
+	bool		canRecord	( )		{ return false; };
 	void		setOutputFile	( string file )	{ wavoutfile = file; };
 	string		getOutputFile	( )		{ return wavoutfile; };
 

@@ -13,23 +13,29 @@
 #include "drivers/AudioInterface.h"
 #include "Config.h"
 
-class GenericOutput : public NFInput
+class VoiceAllocationUnit;
+
+class GenericOutput
 {
 public:
-	virtual	void		setInput	( NFSource & source )	= 0;
+	virtual	void		setInput	(VoiceAllocationUnit* src)
+				{ mInput = src; }
 
 	virtual	int		init		( Config & config )	= 0;
 	virtual	void		run 		( )			= 0;
 	virtual	void		stop		( )			= 0;
 	
-	virtual	int		canRecord	( )			= 0;
-	virtual	void		startRecording	( )			= 0;
-	virtual	void		stopRecording	( )			= 0;
+	virtual	bool		canRecord	( )	{ return false; }
+	virtual	void		startRecording	( )			{;}
+	virtual	void		stopRecording	( )			{;};
 	virtual	void		setOutputFile	( string file )		= 0;
 	virtual	string		getOutputFile	( )			= 0;
 
 
 	virtual	const char*	getTitle	( )	{ return "amSynth"; };
+
+protected:
+	VoiceAllocationUnit*	mInput;
 };
 
 /**
@@ -44,10 +50,6 @@ public:
   AudioOutput();
   virtual ~AudioOutput();
   /**
-   * @param source the NFSource which produces the audio signal
-   */
-  void setInput(NFSource & source);
-  /**
    * the main controller function. This function _never_ returns...
    * until the stop() method is invoked (from another thread of execution
    * obviously)
@@ -60,9 +62,9 @@ public:
     running = 0;
   };
 #ifdef with_sndfile
-	int	canRecord	( )	{ return 1; };
+	bool	canRecord	( )	{ return true; };
 #else
-	int	canRecord	( )	{ return 0; };
+	bool	canRecord	( )	{ return false; };
 #endif
 	void	startRecording	( );
 	void 	stopRecording	( );
@@ -73,7 +75,6 @@ public:
 private:
   int running;
   int channels;
-  NFSource *input;
   Config *config;
   AudioInterface out;
   string wavoutfile;
